@@ -217,8 +217,51 @@ public class MainWindowViewModel : ObservableObject
     public RelayCommand LoadTaskCommand => new(LoadTaskAction);
     public RelayCommand GenerateTaskFileCommand => new(GenerateTaskFileAction);
     public RelayCommand LoadGivenProtCommand => new(LoadGivenProtAction);
+    public RelayCommand SaveProtocolCommand => new(SaveProtocolAction);
     public RelayCommand CheckGivenProtokolCommand => new(CheckGivenProtokolAction);
     public RelayCommand CalcNewSolutionCommand => new(CalcNewSolutionAction);
+
+    private void SaveProtocolAction()
+    {
+        // Check for empty fields
+        var ErrConf = false;
+        foreach (var protokolEntry in CurrentConfig.Protokol.Entrys)
+        {
+            foreach (var varEntry in protokolEntry.VarEntrys)
+            {
+                if ((!CurrentConfig.NeedTypes || !string.IsNullOrWhiteSpace(varEntry.Type)) && !string.IsNullOrWhiteSpace(varEntry.Value))
+                    continue;
+
+                var res = MessageBox.Show("Mindestens ein Feld ist nicht ausgefüllt, trotzdem exportieren?", "leeres Feld", MessageBoxButton.YesNo);
+                if (res != MessageBoxResult.Yes)
+                    return;
+
+                ErrConf = true;
+                break;
+            }
+
+            if (ErrConf)
+            {
+                break;
+            }
+        }
+
+        var dialog = new SaveFileDialog();
+        dialog.FileName = $"Protokoll_{CurrentConfig.Name}";
+        dialog.DefaultExt = ".json";
+        dialog.Filter = "Json Files (.lcp.json)|*.lcp.json|Alle Dateien (*.*)|*.*";
+
+        bool? result = dialog.ShowDialog();
+
+        if (result != true)
+            return;
+
+        string filename = dialog.FileName;
+
+        using StreamWriter file = File.CreateText(filename);
+        JsonSerializer serializer = new JsonSerializer();
+        serializer.Serialize(file, CurrentConfig.Protokol);
+    }
 
     private void LoadGivenProtAction()
     {
