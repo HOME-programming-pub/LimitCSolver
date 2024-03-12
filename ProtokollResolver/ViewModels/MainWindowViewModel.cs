@@ -103,40 +103,10 @@ public class MainWindowViewModel : ObservableObject
 
     public ObservableCollection<(string varName, int varAddr)> CorrectedVars { get; set; } = new();
 
-    // Mode 0 = Generate Task File (get All Vars and save)
-    // Mode 1 = Check given GivenProtokol
-    // Mode 2 = Calc Solution
-    private void StartNewParsing(int mode)
+
+    private static LimitCParser.ProgContext parse(string code)
     {
-
-        if (mode != 0 && mode != 1 && mode != 2)
-            return;
-
-        if (string.IsNullOrWhiteSpace(CurrentConfig.Code))
-        {
-            Error("Code ist leer!");
-            return;
-        }
-
-        if (mode == 1)
-        {
-
-            if (GivenProtokol == null)
-            {
-                Error("Kein Protokoll geladen, das geprüft werden kann!");
-                return;
-            }
-
-            GivenProtokol.ClearAllChecks();
-            GivenProtokol.Points = 0;
-            CorrectedVars.Clear();
-        }
-        else if (mode == 2)
-        {
-            CalcedSolution = new ProtokolViewModel();
-        }
-
-        AntlrInputStream inputStream = new AntlrInputStream(CurrentConfig.Code);
+        AntlrInputStream inputStream = new AntlrInputStream(code);
         LimitCLexer limitCLexer = new LimitCLexer(inputStream);
         CommonTokenStream commonTokenStream = new CommonTokenStream(limitCLexer);
         LimitCParser limitCParser = new LimitCParser(commonTokenStream);
@@ -148,61 +118,61 @@ public class MainWindowViewModel : ObservableObject
         //limitCParser.AddErrorListener();
 
         var limitCContext = limitCParser.prog();
-        var functionDetector = new LimitCFunctionTreeBuilder();
-        functionDetector.Visit(limitCContext);
 
-        var visitor = new LimitCVisitor(functionDetector.FunctionDefs, new Scope());
+        return limitCContext;
+    }
+
+    /// <summary>
+    /// Save a JSON task file that contains the given program.
+    /// </summary>
+    private void SaveTaskFile()
+    {
+        if (string.IsNullOrWhiteSpace(CurrentConfig.Code))
+        {
+            Error("Kein Programm vorhanden!");
+            return;
+        }
 
         try
         {
-            if (mode == 0)
+        var dialog = new SaveFileDialog();
+        dialog.FileName = $"Aufgabenstellung_{CurrentConfig.Name.Replace(" ", "_")}";
+        dialog.DefaultExt = ".json";
+        dialog.Filter = "Json Files (.lct.json)|*.lct.json|Alle Dateien (*.*)|*.*";
+
+        bool? result = dialog.ShowDialog();
+
+        if (result != true)
+            return;
+
+        string filename = dialog.FileName;
+
+        var np = new ProtokolViewModel();
+
+        var program = parse(CurrentConfig.Code);
+        var interpreter = new LimitCInterpreter();
+
+        interpreter.LabelCheckPointReached += (sender, args) =>
+        {
+            var npe = new ProtokolEntryViewModel() { Num = args.LabelNum };
+
+            foreach (var (name, addr) in args.VisibleVars)
             {
+                TypedValue memVal = args.MemoryStorage.Memory[addr];
+                var p = new string('*', memVal.Type.Count(c => c == '*'));
 
-                var dialog = new SaveFileDialog();
-                dialog.FileName = $"Aufgabenstellung_{CurrentConfig.Name.Replace(" ", "_")}";
-                dialog.DefaultExt = ".json";
-                dialog.Filter = "Json Files (.lct.json)|*.lct.json|Alle Dateien (*.*)|*.*";
-
-                bool? result = dialog.ShowDialog();
-
-                if (result != true)
-                    return;
-
-                string filename = dialog.FileName;
-
-                var np = new ProtokolViewModel();
-
-                visitor.LabelCheckPointReached += (sender, args) =>
-                {
-                    var npe = new ProtokolEntryViewModel() { Num = args.LabelNum };
-
-                    foreach (var (name, addr) in args.VisibleVars)
-                    {
-                        TypedValue memVal = args.MemoryStorage.Memory[addr];
-                        var p = new string('*', memVal.Type.Count(c => c == '*'));
-
-                        npe.VarEntrys.Add(new VarViewModel($"{p}{name}", "", "", ""));
-                    }
-                    np.Entrys.Add(npe);
-                };
-
-                visitor.Visit(limitCContext);
-
-                var nt = new SolveTask(CurrentConfig.Code, CurrentConfig.Name, CurrentConfig.NeedTypes, np);
-                using StreamWriter file = File.CreateText(filename);
-                JsonSerializer serializer = new JsonSerializer();
-                serializer.Serialize(file, nt);
+                npe.VarEntrys.Add(new VarViewModel($"{p}{name}", "", "", ""));
             }
-            else if (mode == 1)
-            {
-                visitor.LabelCheckPointReached += VisitorOnLabelCheckPointReachedCheckProtokol;
-                visitor.Visit(limitCContext);
-            }
-            else if (mode == 2)
-            {
-                visitor.LabelCheckPointReached += VisitorOnLabelCheckPointReachedCreateSolution;
-                visitor.Visit(limitCContext);
-            }
+            np.Entrys.Add(npe);
+        };
+
+        interpreter.evaluate(program);
+
+        var nt = new SolveTask(CurrentConfig.Code, CurrentConfig.Name, CurrentConfig.NeedTypes, np);
+        using StreamWriter file = File.CreateText(filename);
+        JsonSerializer serializer = new JsonSerializer();
+        serializer.Serialize(file, nt);
+
         }
         catch (Exception e)
         {
@@ -210,9 +180,53 @@ public class MainWindowViewModel : ObservableObject
             MessageBox.Show(e.Message);
             Console.WriteLine(e);
         }
-
     }
 
+    /// <summary>
+    /// Check a given protocol.
+    /// </summary>
+    private void CheckProtocol()
+    {
+        if (GivenProtokol == null)
+        {
+            Error("Kein Protokoll geladen, das geprüft werden kann!");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(CurrentConfig.Code))
+        {
+            Error("Kein Programm vorhanden!");
+            return;
+        }
+
+        GivenProtokol.ClearAllChecks();
+        GivenProtokol.Points = 0;
+        CorrectedVars.Clear();
+
+        var program = parse(CurrentConfig.Code);
+        var interpreter = new LimitCInterpreter();
+
+        interpreter.LabelCheckPointReached += VisitorOnLabelCheckPointReachedCheckProtokol;
+        interpreter.evaluate(program);
+    }
+
+    /// <summary>
+    /// Calculate the correct solution.
+    /// </summary>
+    private void CalculateSolution()
+    {
+        if (string.IsNullOrWhiteSpace(CurrentConfig.Code))
+        {
+            Error("Kein Programm vorhanden!");
+            return;
+        }
+        CalcedSolution = new ProtokolViewModel();
+        var program = parse(CurrentConfig.Code);
+        var interpreter = new LimitCInterpreter();
+
+        interpreter.LabelCheckPointReached += VisitorOnLabelCheckPointReachedCreateSolution;
+        interpreter.evaluate(program);
+    }
 
     public RelayCommand LoadTaskCommand => new(LoadTaskAction);
     public RelayCommand GenerateTaskFileCommand => new(GenerateTaskFileAction);
@@ -327,25 +341,25 @@ public class MainWindowViewModel : ObservableObject
         {
             CurrentConfig = newconfig;
             CalcedSolution = new ProtokolViewModel();
-            StartNewParsing(2);
+            CalculateSolution();
         }
     }
 
     private void GenerateTaskFileAction()
     {
-        StartNewParsing(0);
+        SaveTaskFile();
     }
 
     private void CheckGivenProtokolAction()
     {
         if (CalcedSolution == null)
             CalcNewSolutionAction();
-        StartNewParsing(1);
+        CheckProtocol();
     }
 
     private void CalcNewSolutionAction()
     {
-        StartNewParsing(2);
+        CalculateSolution();
         OnPropertyChanged(nameof(CalcedSolution));
     }
 

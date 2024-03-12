@@ -8,20 +8,8 @@ using System.Text.RegularExpressions;
 
 namespace LimitCSolver;
 
-public partial class LimitCVisitor : LimitCBaseVisitor<object?>
+public partial class LimitCInterpreter : LimitCBaseVisitor<object?>
 {
-
-    public LimitCVisitor(Dictionary<string, FunctionDef> functionDefs, Scope glocalScope, Scope? localScope = null, MemoryStorage? memoryStorage = null)
-    {
-
-        FunctionDefs = functionDefs;
-        _globalScope = glocalScope;
-
-        if (localScope != null)
-            _scopes.Push(localScope);
-
-        MemoryStorage = memoryStorage ?? new MemoryStorage();
-    }
 
     public Dictionary<string, FunctionDef> FunctionDefs;
     //private int _memoryLastPos = 0;
@@ -34,9 +22,34 @@ public partial class LimitCVisitor : LimitCBaseVisitor<object?>
 
     private bool _returnIndicator;
 
+    public LimitCInterpreter(Dictionary<string, FunctionDef> functionDefs, Scope glocalScope, Scope? localScope = null, MemoryStorage? memoryStorage = null)
+    {
+
+        FunctionDefs = functionDefs;
+        _globalScope = glocalScope;
+
+        if (localScope != null)
+            _scopes.Push(localScope);
+
+        MemoryStorage = memoryStorage ?? new MemoryStorage();
+    }
+
+    public LimitCInterpreter()
+    {
+        FunctionDefs = new Dictionary<string, FunctionDef>();
+        _globalScope = new Scope();
+        MemoryStorage = new MemoryStorage();
+    }
+
+    public object? evaluate(LimitCParser.ProgContext program) 
+    {
+        var functionDetector = new LimitCFunctionTreeBuilder();
+        functionDetector.Visit(program);
+
+        return this.Visit(program);
+    }
+
     #region GlobaFuncDef And CodeBlock (non-global)
-
-
     public override object? VisitFuncDef(LimitCParser.FuncDefContext context)
     {
 
@@ -270,11 +283,10 @@ public partial class LimitCVisitor : LimitCBaseVisitor<object?>
                     nlc.AddVar(arg.name, MemoryStorage.AddToMemory(arg.type, val)); // Variable in neuen Scope einfügen und im Speicher neu ablegen
                 }
             }
-
-            var nlcv = new LimitCVisitor(FunctionDefs, _globalScope, nlc, MemoryStorage); // neuer Visitor
-            nlcv.LabelCheckPointReached += LabelCheckPointReached; // Erreignisse an EventHandler durchreichen
-
-            ret = nlcv.Visit(functionDef.ParseTree); // Abarbeitung Funktion durchführen
+            
+            _scopes.Push(nlc); // we push the function's local scope
+            ret = this.Visit(functionDef.ParseTree); // Abarbeitung Funktion durchführen
+            _scopes.Pop(); // we pop the function's local scope
         }
 
         return ret; // Rückgabewerte zurückgeben

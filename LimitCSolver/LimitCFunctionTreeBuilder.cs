@@ -2,7 +2,7 @@ using LimitCSolver.SubTypes;
 
 namespace LimitCSolver;
 
-public partial class LimitCFunctionTreeBuilder : LimitCBaseVisitor<object?>
+public class LimitCFunctionTreeBuilder : LimitCBaseVisitor<object?>
 {
 
     #region Function detection
