@@ -17,23 +17,27 @@
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="5*" />
-            <ColumnDefinition Width="5*" />
-            <ColumnDefinition Width="2.5*" />
+            <ColumnDefinition Width="11*" />
+            <ColumnDefinition Width="13*" />
+            <ColumnDefinition Width="6*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.1*" />
             <RowDefinition />
             <!--<RowDefinition Height="0.1*" />-->
         </Grid.RowDefinitions>
-        <UniformGrid Rows="1">
-            <Button Margin="1" Command="{Binding LoadTaskCommand}">Aufgabe laden</Button>
-            <Button Margin="1" Command="{Binding GenerateTaskFileCommand}">Aufgabe speichern</Button>
+        <UniformGrid Rows="1" >
+            <Button Margin="1" Click="LoadTaskFromFile_OnClick">Aufgabe laden</Button>
+            <Button Margin="1" Click="SaveTaskToFile_OnClick">Aufgabe speichern</Button>
         </UniformGrid>
-        <UniformGrid Grid.Row="0" Grid.Column="1" Rows="1">
-            <Button Margin="1" Command="{Binding LoadGivenProtCommand}">Protokoll laden</Button>
-            <Button Margin="1" Command="{Binding SaveProtocolCommand}">Protokoll speichern</Button>
-            <Button Margin="1" Command="{Binding CheckGivenProtokolCommand}">Prüfen</Button>
+        <UniformGrid Grid.Row="0" Grid.Column="1" Rows="1" >
+            <Button Margin="1" >Sync Code</Button>
+            <Button Margin="1" Click="LoadProtocol_OnClick">
+                <TextBlock>Protokoll<LineBreak/>laden</TextBlock></Button>
+            <Button Margin="1" Click="SaveProtocol_OnClick">
+                <TextBlock>Protokoll<LineBreak/>speichern</TextBlock>
+            </Button>
+            <Button Margin="1" Command="{Binding CheckGivenProtokolActionCommand}">Prüfen</Button>
         </UniformGrid>
 
         <Grid Grid.Row="1" Grid.Column="0" >
@@ -75,7 +79,7 @@
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type viewModels1:ProtokolEntryViewModel}">
+                                <DataTemplate DataType="{x:Type viewModels1:ProtokolEntryViewModel}" >
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="25" />
@@ -174,7 +178,7 @@
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" FontWeight="Bold" HorizontalAlignment="Center" Margin="0 5">Lösung</TextBlock>
                     <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                        <ItemsControl ItemsSource="{Binding CalcedSolution.Entrys}">
+                        <ItemsControl ItemsSource="{Binding CalcedSolution.Entrys}" Visibility="{Binding SolutionVisibility}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel Orientation="Vertical"></StackPanel>
@@ -227,7 +231,7 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </ScrollViewer>
-                    <Button Grid.Row="2" Margin="1,1,1,1"  Command="{Binding CalcNewSolutionCommand}" Grid.RowSpan="2">Lösung anzeigen</Button>
+                    <Button Grid.Row="2" Margin="1,1,1,1"  Command="{Binding CalcNewSolutionActionCommand}" Grid.RowSpan="2">Lösung ein-/ausblenden</Button>
 
                 </Grid>
             </Grid>

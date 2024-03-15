@@ -16,12 +16,11 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Documents;
-using Newtonsoft.Json.Linq;
+using Microsoft.VisualBasic;
 
 namespace ProtokollResolver.ViewModels;
 
-public class MainWindowViewModel : ObservableObject
+public partial class MainWindowViewModel : ObservableObject
 {
 
     public MainWindowViewModel()
@@ -78,28 +77,19 @@ public class MainWindowViewModel : ObservableObject
 
     }
 
-    private ProtokolViewModel? _givenProtokol;
+    [ObservableProperty]
     private SolveTask _currentConfig = new("", "", false, new ProtokolViewModel());
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CheckGivenProtokolActionCommand))]
+    private ProtokolViewModel? _givenProtokol;
+ 
+
+    [ObservableProperty]
     private ProtokolViewModel? _calcedSolution;
 
-
-    public SolveTask CurrentConfig
-    {
-        get => _currentConfig;
-        set => SetProperty(ref _currentConfig, value);
-    }
-
-    public ProtokolViewModel? CalcedSolution
-    {
-        get => _calcedSolution;
-        set => SetProperty(ref _calcedSolution, value);
-    }
-
-    public ProtokolViewModel? GivenProtokol
-    {
-        get => _givenProtokol;
-        set => SetProperty(ref _givenProtokol, value);
-    }
+    [ObservableProperty]
+    private Visibility _solutionVisibility = Visibility.Hidden;
 
     public ObservableCollection<(string varName, int varAddr)> CorrectedVars { get; set; } = new();
 
@@ -122,65 +112,7 @@ public class MainWindowViewModel : ObservableObject
         return limitCContext;
     }
 
-    /// <summary>
-    /// Save a JSON task file that contains the given program.
-    /// </summary>
-    private void SaveTaskFile()
-    {
-        if (string.IsNullOrWhiteSpace(CurrentConfig.Code))
-        {
-            Error("Kein Programm vorhanden!");
-            return;
-        }
-
-        try
-        {
-        var dialog = new SaveFileDialog();
-        dialog.FileName = $"Aufgabenstellung_{CurrentConfig.Name.Replace(" ", "_")}";
-        dialog.DefaultExt = ".json";
-        dialog.Filter = "Json Files (.lct.json)|*.lct.json|Alle Dateien (*.*)|*.*";
-
-        bool? result = dialog.ShowDialog();
-
-        if (result != true)
-            return;
-
-        string filename = dialog.FileName;
-
-        var np = new ProtokolViewModel();
-
-        var program = parse(CurrentConfig.Code);
-        var interpreter = new LimitCInterpreter();
-
-        interpreter.LabelCheckPointReached += (sender, args) =>
-        {
-            var npe = new ProtokolEntryViewModel() { Num = args.LabelNum };
-
-            foreach (var (name, addr) in args.VisibleVars)
-            {
-                TypedValue memVal = args.MemoryStorage.Memory[addr];
-                var p = new string('*', memVal.Type.Count(c => c == '*'));
-
-                npe.VarEntrys.Add(new VarViewModel($"{p}{name}", "", "", ""));
-            }
-            np.Entrys.Add(npe);
-        };
-
-        interpreter.evaluate(program);
-
-        var nt = new SolveTask(CurrentConfig.Code, CurrentConfig.Name, CurrentConfig.NeedTypes, np);
-        using StreamWriter file = File.CreateText(filename);
-        JsonSerializer serializer = new JsonSerializer();
-        serializer.Serialize(file, nt);
-
-        }
-        catch (Exception e)
-        {
-            MessageBox.Show("Eine Exception ist aufgetreten");
-            MessageBox.Show(e.Message);
-            Console.WriteLine(e);
-        }
-    }
+    private bool CanCheckProtocol() => GivenProtokol != null && !string.IsNullOrWhiteSpace(CurrentConfig.Code);
 
     /// <summary>
     /// Check a given protocol.
@@ -227,15 +159,11 @@ public class MainWindowViewModel : ObservableObject
         interpreter.LabelCheckPointReached += VisitorOnLabelCheckPointReachedCreateSolution;
         interpreter.evaluate(program);
     }
-
-    public RelayCommand LoadTaskCommand => new(LoadTaskAction);
-    public RelayCommand GenerateTaskFileCommand => new(GenerateTaskFileAction);
-    public RelayCommand LoadGivenProtCommand => new(LoadGivenProtAction);
-    public RelayCommand SaveProtocolCommand => new(SaveProtocolAction);
-    public RelayCommand CheckGivenProtokolCommand => new(CheckGivenProtokolAction);
+                             
     public RelayCommand CalcNewSolutionCommand => new(CalcNewSolutionAction);
 
-    private void SaveProtocolAction()
+
+    public bool HasEmptyFields()
     {
         // Check for empty fields
         var ErrConf = false;
@@ -246,10 +174,6 @@ public class MainWindowViewModel : ObservableObject
                 if ((!CurrentConfig.NeedTypes || !string.IsNullOrWhiteSpace(varEntry.Type)) && !string.IsNullOrWhiteSpace(varEntry.Value))
                     continue;
 
-                var res = MessageBox.Show("Mindestens ein Feld ist nicht ausgefüllt, trotzdem exportieren?", "leeres Feld", MessageBoxButton.YesNo);
-                if (res != MessageBoxResult.Yes)
-                    return;
-
                 ErrConf = true;
                 break;
             }
@@ -259,42 +183,20 @@ public class MainWindowViewModel : ObservableObject
                 break;
             }
         }
+        return ErrConf;
+    }
 
-        var dialog = new SaveFileDialog();
-        dialog.FileName = $"Protokoll_{CurrentConfig.Name}";
-        dialog.DefaultExt = ".json";
-        dialog.Filter = "Json Files (.lcp.json)|*.lcp.json|Alle Dateien (*.*)|*.*";
-
-        bool? result = dialog.ShowDialog();
-
-        if (result != true)
-            return;
-
-        string filename = dialog.FileName;
-
+    public void SaveProtocolToFile(string filename)
+    {
         using StreamWriter file = File.CreateText(filename);
         JsonSerializer serializer = new JsonSerializer();
         serializer.Serialize(file, CurrentConfig.Protokol);
     }
 
-    private void LoadGivenProtAction()
+
+    public void LoadProtocolFromFile(string path)
     {
-        var openFileDialog = new OpenFileDialog();
-        openFileDialog.Filter = "Json Files (.lcp.json)|*.lcp.json|Alle Dateien (*.*)|*.*";
-        openFileDialog.RestoreDirectory = true;
-
-        if (openFileDialog.ShowDialog() == false)
-            return;
-
-        var filePath = openFileDialog.FileName;
-
-        if (!File.Exists(filePath))
-        {
-            MessageBox.Show("Datei wurde nicht gefunden!");
-            return;
-        }
-
-        var c = File.ReadAllText(filePath);
+        var c = File.ReadAllText(path);
         ProtokolViewModel newprot = new ProtokolViewModel();
 
         try
@@ -314,28 +216,12 @@ public class MainWindowViewModel : ObservableObject
 
         newprot.Points = 0;
         GivenProtokol = newprot;
-        
     }
 
-    private void LoadTaskAction()
+    public void LoadTaskFromFile(string path)
     {
-        var openFileDialog = new OpenFileDialog();
-        openFileDialog.Filter = "Json Files (.lct.json)|*.lct.json|Alle Dateien (*.*)|*.*";
-        openFileDialog.RestoreDirectory = true;
-
-        if (openFileDialog.ShowDialog() == false)
-            return;
-
-        var filePath = openFileDialog.FileName;
-
-        if (!File.Exists(filePath))
-        {
-            MessageBox.Show("Datei wurde nicht gefunden!");
-            return;
-        }
-
-        var c = File.ReadAllText(filePath);
-        var newconfig = JsonConvert.DeserializeObject<SolveTask>(c);
+        var contents = File.ReadAllText(path);
+        var newconfig = JsonConvert.DeserializeObject<SolveTask>(contents);
 
         if (newconfig != null)
         {
@@ -345,11 +231,36 @@ public class MainWindowViewModel : ObservableObject
         }
     }
 
-    private void GenerateTaskFileAction()
+    public void SaveTaskToFile(string path)
     {
-        SaveTaskFile();
+        var np = new ProtokolViewModel();
+
+        var program = parse(CurrentConfig.Code);
+        var interpreter = new LimitCInterpreter();
+
+        interpreter.LabelCheckPointReached += (sender, args) =>
+        {
+            var npe = new ProtokolEntryViewModel() { Num = args.LabelNum };
+
+            foreach (var (name, addr) in args.VisibleVars)
+            {
+                TypedValue memVal = args.MemoryStorage.Memory[addr];
+                var p = new string('*', memVal.Type.Count(c => c == '*'));
+
+                npe.VarEntrys.Add(new VarViewModel($"{p}{name}", "", "", ""));
+            }
+            np.Entrys.Add(npe);
+        };
+
+        interpreter.evaluate(program);
+
+        var nt = new SolveTask(CurrentConfig.Code, CurrentConfig.Name, CurrentConfig.NeedTypes, np);
+        using StreamWriter file = File.CreateText(path);
+        JsonSerializer serializer = new JsonSerializer();
+        serializer.Serialize(file, nt);
     }
 
+    [RelayCommand(CanExecute = nameof(CanCheckProtocol))]
     private void CheckGivenProtokolAction()
     {
         if (CalcedSolution == null)
@@ -357,10 +268,20 @@ public class MainWindowViewModel : ObservableObject
         CheckProtocol();
     }
 
+    [RelayCommand]
     private void CalcNewSolutionAction()
     {
-        CalculateSolution();
-        OnPropertyChanged(nameof(CalcedSolution));
+        if(SolutionVisibility == Visibility.Hidden)
+        {
+            CalculateSolution();
+            SolutionVisibility = Visibility.Visible;
+            OnPropertyChanged(nameof(CalcedSolution));
+        }
+        else
+        {
+            SolutionVisibility = Visibility.Hidden;
+        }
+
     }
 
     private void VisitorOnLabelCheckPointReachedCheckProtokol(object? sender, LabelCheckPointEventArgs e)
