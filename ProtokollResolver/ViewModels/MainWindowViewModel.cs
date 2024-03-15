@@ -17,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using Microsoft.VisualBasic;
+using System.ComponentModel;
 
 namespace ProtokollResolver.ViewModels;
 
@@ -77,8 +78,29 @@ public partial class MainWindowViewModel : ObservableObject
 
     }
 
-    [ObservableProperty]
     private SolveTask _currentConfig = new("", "", false, new ProtokolViewModel());
+    public SolveTask CurrentConfig
+    {
+        get => _currentConfig;
+        set
+        {
+            if (_currentConfig != null)
+                _currentConfig.PropertyChanged -= handleConfigInternalChange;
+            value.PropertyChanged += handleConfigInternalChange;
+            SetProperty(ref _currentConfig, value);
+            CheckGivenProtokolActionCommand.NotifyCanExecuteChanged();
+            CalcNewSolutionActionCommand.NotifyCanExecuteChanged();
+            SyncProtocolCommand.NotifyCanExecuteChanged();
+
+        }
+    }
+
+    private void handleConfigInternalChange(object? sender, PropertyChangedEventArgs eas) 
+    {
+        CheckGivenProtokolActionCommand.NotifyCanExecuteChanged();
+        CalcNewSolutionActionCommand.NotifyCanExecuteChanged();
+        SyncProtocolCommand.NotifyCanExecuteChanged();
+    }
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CheckGivenProtokolActionCommand))]
@@ -119,18 +141,8 @@ public partial class MainWindowViewModel : ObservableObject
     /// </summary>
     private void CheckProtocol()
     {
-        if (GivenProtokol == null)
-        {
-            Error("Kein Protokoll geladen, das geprüft werden kann!");
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(CurrentConfig.Code))
-        {
-            Error("Kein Programm vorhanden!");
-            return;
-        }
-
+        if(GivenProtokol == null)
+            return; 
         GivenProtokol.ClearAllChecks();
         GivenProtokol.Points = 0;
         CorrectedVars.Clear();
@@ -142,6 +154,8 @@ public partial class MainWindowViewModel : ObservableObject
         interpreter.evaluate(program);
     }
 
+    private bool CanCalculateSolution => !string.IsNullOrWhiteSpace(CurrentConfig.Code);
+
     /// <summary>
     /// Calculate the correct solution.
     /// </summary>
@@ -149,7 +163,6 @@ public partial class MainWindowViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(CurrentConfig.Code))
         {
-            Error("Kein Programm vorhanden!");
             return;
         }
         CalcedSolution = new ProtokolViewModel();
@@ -159,9 +172,6 @@ public partial class MainWindowViewModel : ObservableObject
         interpreter.LabelCheckPointReached += VisitorOnLabelCheckPointReachedCreateSolution;
         interpreter.evaluate(program);
     }
-                             
-    public RelayCommand CalcNewSolutionCommand => new(CalcNewSolutionAction);
-
 
     public bool HasEmptyFields()
     {
@@ -196,18 +206,18 @@ public partial class MainWindowViewModel : ObservableObject
 
     public void LoadProtocolFromFile(string path)
     {
-        var c = File.ReadAllText(path);
+        var fileContents = File.ReadAllText(path);
         ProtokolViewModel newprot = new ProtokolViewModel();
 
         try
         {
-            newprot = JsonConvert.DeserializeObject<ProtokolViewModel>(c) ?? new ProtokolViewModel();
+            newprot = JsonConvert.DeserializeObject<ProtokolViewModel>(fileContents) ?? new ProtokolViewModel();
         }
         catch (Exception e)
         {
             // Kein Protokoll aus Input Tool?
             //var t = JArray.Parse(c);
-            var t = JsonConvert.DeserializeObject<List<ExtProtokolEntryViewModel>>(c) ?? new List<ExtProtokolEntryViewModel>();
+            var t = JsonConvert.DeserializeObject<List<ExtProtokolEntryViewModel>>(fileContents) ?? new List<ExtProtokolEntryViewModel>();
             foreach (var model in t)
             {
                 newprot.Entrys.Add(new ProtokolEntryViewModel(model.Label, model.Vars));
@@ -227,16 +237,25 @@ public partial class MainWindowViewModel : ObservableObject
         {
             CurrentConfig = newconfig;
             CalcedSolution = new ProtokolViewModel();
-            CalculateSolution();
+            //CalculateSolution();
         }
     }
 
     public void SaveTaskToFile(string path)
     {
-        var np = new ProtokolViewModel();
+        var newProtocol = ExtractEmptyProtocolFromProgram(CurrentConfig.Code);
+        var newTask = new SolveTask(CurrentConfig.Code, CurrentConfig.Name, CurrentConfig.NeedTypes, newProtocol);
 
-        var program = parse(CurrentConfig.Code);
+        using StreamWriter file = File.CreateText(path);
+        JsonSerializer serializer = new JsonSerializer();
+        serializer.Serialize(file, newTask);
+    }
+
+    private ProtokolViewModel ExtractEmptyProtocolFromProgram(string code)
+    {
+        var newProtocol = new ProtokolViewModel();
         var interpreter = new LimitCInterpreter();
+        var program = parse(CurrentConfig.Code);
 
         interpreter.LabelCheckPointReached += (sender, args) =>
         {
@@ -249,15 +268,43 @@ public partial class MainWindowViewModel : ObservableObject
 
                 npe.VarEntrys.Add(new VarViewModel($"{p}{name}", "", "", ""));
             }
-            np.Entrys.Add(npe);
+            newProtocol.Entrys.Add(npe);
         };
 
         interpreter.evaluate(program);
 
-        var nt = new SolveTask(CurrentConfig.Code, CurrentConfig.Name, CurrentConfig.NeedTypes, np);
-        using StreamWriter file = File.CreateText(path);
-        JsonSerializer serializer = new JsonSerializer();
-        serializer.Serialize(file, nt);
+        return newProtocol;
+    }
+
+    [RelayCommand(CanExecute = nameof(CanCalculateSolution))]
+    private void SyncProtocol()
+    {
+        var newProtocol = ExtractEmptyProtocolFromProgram(CurrentConfig.Code);
+        var currentProtocol = GivenProtokol;
+        if (currentProtocol == null)
+        {
+            GivenProtokol = newProtocol;
+            return;
+        }
+        
+        for(int i = 0; i < newProtocol.Entrys.Count && i < currentProtocol.Entrys.Count; i++)
+        {
+            var newEntry = newProtocol.Entrys[i];
+            var currentEntry = currentProtocol.Entrys[i];
+            foreach(var newVarEntry in newEntry.VarEntrys)
+            {
+                foreach(var currentVarEntry in currentEntry.VarEntrys)
+                {
+                    if(string.Equals(currentVarEntry.Name, newVarEntry.Name))
+                    {
+                        newVarEntry.Value = currentVarEntry.Value;
+                        newVarEntry.Type = currentVarEntry.Type;
+                        break;
+                    }
+                }
+            }
+        }
+        GivenProtokol = newProtocol;
     }
 
     [RelayCommand(CanExecute = nameof(CanCheckProtocol))]
@@ -268,7 +315,7 @@ public partial class MainWindowViewModel : ObservableObject
         CheckProtocol();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanCalculateSolution))]
     private void CalcNewSolutionAction()
     {
         if(SolutionVisibility == Visibility.Hidden)

@@ -3,7 +3,7 @@ using CommonClasses.ViewModels;
 
 namespace CommonClasses.JsonTemplate;
 
-public class SolveTask : ObservableObject
+public partial class SolveTask : ObservableObject
 {
     public SolveTask(string code, string name, bool needTypes, ProtokolViewModel protokol)
     {
@@ -13,39 +13,18 @@ public class SolveTask : ObservableObject
         _protokol = protokol;
     }
 
+    [ObservableProperty]
     private string _code;
+    
+    [ObservableProperty]
     private string _name;
+    
+    [ObservableProperty]
     private bool _needTypes;
+    
+    [ObservableProperty]
     private ProtokolViewModel _protokol;
+    
+    [ObservableProperty]
     private decimal _pointForMatch = 0.5m;
-
-    public string Code
-    {
-        get => _code;
-        set => SetProperty(ref _code, value);
-    }
-
-    public string Name
-    {
-        get => _name;
-        set => SetProperty(ref _name, value);
-    }
-
-    public bool NeedTypes
-    {
-        get => _needTypes;
-        set => SetProperty(ref _needTypes, value);
-    }
-
-    public decimal PointForMatch
-    {
-        get => _pointForMatch;
-        set => SetProperty(ref _pointForMatch, value);
-    }
-
-    public ProtokolViewModel Protokol
-    {
-        get => _protokol;
-        set => SetProperty(ref _protokol, value);
-    }
 }

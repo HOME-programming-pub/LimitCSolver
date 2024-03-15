@@ -31,7 +31,7 @@
             <Button Margin="1" Click="SaveTaskToFile_OnClick">Aufgabe speichern</Button>
         </UniformGrid>
         <UniformGrid Grid.Row="0" Grid.Column="1" Rows="1" >
-            <Button Margin="1" >Sync Code</Button>
+            <Button Margin="1"  Command="{Binding SyncProtocolCommand}">Sync Code</Button>
             <Button Margin="1" Click="LoadProtocol_OnClick">
                 <TextBlock>Protokoll<LineBreak/>laden</TextBlock></Button>
             <Button Margin="1" Click="SaveProtocol_OnClick">
