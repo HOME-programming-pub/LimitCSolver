@@ -113,32 +113,32 @@ public partial class LimitCInterpreter : LimitCBaseVisitor<object?>
         if (!m.Success) 
             return null;
 
-        int n;
+        int labelID;
 
-        if (int.TryParse(m.Groups[1].Value, out n) && n <= 0)
+        if (int.TryParse(m.Groups[1].Value, out labelID) && labelID <= 0)
             return null;
 
         var cscope = _scopes.Peek();
 
-        var l = new Dictionary<string, int>();
+        var visibleVariables = new Dictionary<string, int>();
 
         foreach (var (name, addr) in _globalScope.vars)
         {
-            l[name] = addr;
+            visibleVariables[name] = addr;
         }
         foreach (var (name, addr) in cscope.vars)
         {
-            l[name] = addr;
+            visibleVariables[name] = addr;
         }
         foreach (var scope in cscope.SubScopes)
         {
             foreach (var (name, addr) in scope.vars)
             {
-                l[name] = addr;
+                visibleVariables[name] = addr;
             }
         }
 
-        LabelCheckPointReached?.Invoke(this, new LabelCheckPointEventArgs(n, l, MemoryStorage));
+        LabelCheckPointReached?.Invoke(this, new LabelCheckPointEventArgs(labelID, visibleVariables, MemoryStorage));
 
         return null;
     }

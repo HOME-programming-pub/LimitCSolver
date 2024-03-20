@@ -545,8 +545,8 @@ public partial class MainWindowViewModel : ObservableObject
 
         var vars = e.VisibleVars;
 
-        var npe = new ProtokolEntryViewModel();
-        npe.Num = e.LabelNum;
+        var newProtocolEntry = new ProtokolEntryViewModel();
+        newProtocolEntry.Num = e.LabelNum;
 
         foreach (var (name, addr) in vars)
         {
@@ -556,61 +556,61 @@ public partial class MainWindowViewModel : ObservableObject
                 return;
             }
 
-            TypedValue memVal = e.MemoryStorage.Memory[addr];
+            TypedValue typedValue = e.MemoryStorage.Memory[addr];
 
-            var memV = memVal.Value;
+            var valueString = typedValue.Value;
 
-            var p = new string('*', memVal.Type.Count(c => c == '*'));
-            if (memVal.Type.Contains('*'))
+            var indirectionsCount = typedValue.Type.Count(c => c == '*');
+            
+            if (typedValue.Type.Contains('*'))
             {
-                if (memV != null)
+                if (valueString != null)
                 {
-                    TypedValue? vov = null;
-                    if (e.MemoryStorage.Memory.ContainsKey((int)memV))
+                    TypedValue? nextValue = null;
+                    if (e.MemoryStorage.Memory.ContainsKey((int)valueString))
                     {
-                        vov = e.MemoryStorage.Memory[(int)memV];
-                        for (int i = 1; i < p.Length; i++) // Vorgang für Zeigertiefe {p.Length} wiederholen
+                        nextValue = e.MemoryStorage.Memory[(int)valueString];
+                        for (int i = 1; i < indirectionsCount; i++) // Vorgang für Zeigertiefe {p.Length} wiederholen
                         {
-                            if (vov.Value == null || !e.MemoryStorage.Memory.ContainsKey((int)vov.Value))
+                            if (nextValue.Value == null || !e.MemoryStorage.Memory.ContainsKey((int)nextValue.Value))
                             {
-                                vov = null;
+                                nextValue = null;
                                 break;
                             }
-                            vov = e.MemoryStorage.Memory[(int)vov.Value];
+                            nextValue = e.MemoryStorage.Memory[(int)nextValue.Value];
                         }
 
                     }
 
-                    memV = vov?.Value ?? null;
+                    valueString = nextValue?.Value ?? null;
                 }
 
             }
 
-            string valval = "";
-            string valval2 = "";
-            if (memV is int memValInt)
+            string protocolValue = "";
+            string alternativeRepresentation = "";
+            if (valueString is int intValue)
             {
-                valval = memValInt.ToString();
-                if (memVal.Type.Contains("char"))
+                protocolValue = intValue.ToString();
+                if (typedValue.Type.Contains("char"))
                 {
-                    valval2 = ((char)memValInt).ToString();
+                    alternativeRepresentation = ((char)intValue).ToString();
                 }
             }
-            else if (memV is double memValDouble)
+            else if (valueString is double doubleValue)
             {
-                valval = memValDouble.ToString("F2", CultureInfo.InvariantCulture);
+                protocolValue = doubleValue.ToString("F2", CultureInfo.InvariantCulture);
             }
-            else if (memV is null)
+            else if (valueString is null)
             {
-                valval = "NULL";
+                protocolValue = "NULL";
             }
 
-            npe.VarEntrys.Add(new VarViewModel($"{p}{name}", memVal.Type, valval, valval2));
-
-
+            var pointerChain = new string('*', indirectionsCount);
+            newProtocolEntry.VarEntrys.Add(new VarViewModel($"{pointerChain}{name}", typedValue.Type, protocolValue, alternativeRepresentation));
         }
 
-        CalcedSolution.Entrys.Add(npe);
+        CalcedSolution.Entrys.Add(newProtocolEntry);
 
     }
 

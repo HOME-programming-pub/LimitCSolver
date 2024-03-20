@@ -8,12 +8,12 @@ namespace CommonClasses.ViewModels;
 
 public class VarViewModel : ObservableValidator
 {
-    public VarViewModel(string name, string type, string value, string value2)
+    public VarViewModel(string name, string type, string value, string valueRepresentation)
     {
         Name = name;
         Type = type;
         Value = value;
-        SecondValue = value2;
+        ValueRepresentation = valueRepresentation;
     }
 
     private string _name = string.Empty;
@@ -25,7 +25,7 @@ public class VarViewModel : ObservableValidator
     private bool _absCorrectedType;
     private bool _absCorrectedValue;
     private bool _gotPoint;
-    private string _secondValue = string.Empty;
+    private string _valueRepresentation = string.Empty;
     private bool _failedToInclude;
 
     public int Index { get; set; }
@@ -59,10 +59,13 @@ public class VarViewModel : ObservableValidator
         }
     }
 
-    public string SecondValue
+    /// <summary>
+    /// An alternative representation of the actual value in the protocol. Currently used to store rendered characters.
+    /// </summary>
+    public string ValueRepresentation
     {
-        get => _secondValue;
-        set => SetProperty(ref _secondValue, value);
+        get => _valueRepresentation;
+        set => SetProperty(ref _valueRepresentation, value);
     }
 
     public bool? TypeCheck

@@ -209,11 +209,11 @@
                                                         <TextBlock Text="{Binding Name}"></TextBlock>
                                                         <TextBlock Text="="></TextBlock>
                                                         <TextBlock Text="{Binding Value}"></TextBlock>
-                                                        <TextBlock Text="{Binding SecondValue, StringFormat={} \'{0}\'}">
+                                                        <TextBlock Text="{Binding ValueRepresentation, StringFormat={} \'{0}\'}">
                                                             <TextBlock.Style>
                                                                 <Style TargetType="{x:Type TextBlock}">
                                                                     <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding SecondValue}" Value="">
+                                                                        <DataTrigger Binding="{Binding ValueRepresentation}" Value="">
                                                                             <Setter Property="Visibility" Value="Hidden"></Setter>
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
