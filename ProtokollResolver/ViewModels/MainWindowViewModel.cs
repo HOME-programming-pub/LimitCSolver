@@ -342,175 +342,182 @@ public partial class MainWindowViewModel : ObservableObject
         }
 
         // ValueTypes vor Zeigern checken
-        var vars = e.VisibleVars.OrderBy(se => e.MemoryStorage.Memory[se.Value].Type.Contains('*'));
+        var visibleVars = e.VisibleVars.OrderBy(se => e.MemoryStorage.Memory[se.Value].Type.Contains('*'));
 
         // Eintrag aus dem zu prüfenden Protokoll
-        var protokollEntry = GivenProtokol.Entrys.FirstOrDefault(pe => pe.Num == e.LabelNum);
-        if (protokollEntry == null)
+        var protocolEntry = GivenProtokol.Entrys.FirstOrDefault(pe => pe.Num == e.LabelNum);
+        if (protocolEntry == null)
         {
             Error($"Label {e.LabelNum} in Überprüfung erreicht, aber im Protokoll scheint kein entsprechender Eintrag vorhanden zu sein!");
             return;
         }
 
         // Eintrag aus der berechneten Lösung
-        var absSltV = CalcedSolution?.Entrys.FirstOrDefault(pe => pe.Num == e.LabelNum);
+        var calculatedEntry = CalcedSolution?.Entrys.FirstOrDefault(pe => pe.Num == e.LabelNum);
 
-        foreach (var (name, addr) in vars)
+        foreach (var (name, addr) in visibleVars)
         {
+            TypedValue currentMemoryCell = e.MemoryStorage.Memory[addr];
 
-            TypedValue memVal = e.MemoryStorage.Memory[addr];
-            var p = new string('*', memVal.Type.Count(c => c == '*'));
+            var indirectionCount = currentMemoryCell.Type.Count(c => c == '*');
+            var pointerChain = new string('*', indirectionCount);
 
-            var absVarVal = absSltV?.VarEntrys.First(x => x.Name == $"{p}{name}").Value ?? "";
-            var absVarType = absSltV?.VarEntrys.First(x => x.Name == $"{p}{name}").Type ?? "";
+            var calculatedValue = calculatedEntry?.VarEntrys.First(x => x.Name == $"{pointerChain}{name}").Value ?? "";
+            var calculatedType = calculatedEntry?.VarEntrys.First(x => x.Name == $"{pointerChain}{name}").Type ?? "";
 
-            var protVar = protokollEntry.VarEntrys.FirstOrDefault(pv => pv.Name == $"{p}{name}");
+            var protocolVariable = protocolEntry.VarEntrys.FirstOrDefault(pv => pv.Name == $"{pointerChain}{name}");
 
-            if (protVar == null)
+            if (protocolVariable == null)
             {
                 Error($"Fehler bei Label {e.LabelNum}, die sichtbare Variable {name} scheint" +
                       $" im Protokoll an der entsprechenden Stelle nicht definiert zu sein!");
                 return;
             }
 
-            protVar.GotPoint = false;
+            protocolVariable.GotPoint = false;
 
             if (!CurrentConfig.NeedTypes)
             {
-                protVar.TypeCheck = true;
+                protocolVariable.TypeCheck = true;
             }
             else
             {
                 // Typed needed
-                protVar.TypeCheck = memVal.Type == protVar.Type;
-                if (protVar.TypeCheck == false)
+                protocolVariable.TypeCheck = currentMemoryCell.Type == protocolVariable.Type;
+                if (protocolVariable.TypeCheck == false)
                 {
                     // Type war nicht der den der aktuelle Durchlauf berechnet hat (könnte bereits korrigiert sein)
-                    protVar.TypeCheck = absVarType == protVar.Type;
-                    if (protVar.TypeCheck == true)
+                    protocolVariable.TypeCheck = calculatedType == protocolVariable.Type;
+                    if (protocolVariable.TypeCheck == true)
                     {
                         // korrigiert berechnete Lösung Falsch, aber korrekt zur absoluten Lösung
-                        protVar.AbsCorrectedType = true;
+                        protocolVariable.AbsCorrectedType = true;
                     }
                 }
             }
 
-            var memV = memVal.Value; // Variablen Wert oder Ziel-Adresse (wenn Zeiger)
-            var memA = -1;
-            if (memVal.Type.Contains('*')) // aktuelle Variable ein Zeiger? -> memV == Adresse ?? null
+            var memoryValue = currentMemoryCell.Value; // Variablen Wert oder Ziel-Adresse (wenn Zeiger)
+            var addressValue = -1;
+
+            if (currentMemoryCell.Type.Contains('*')) // aktuelle Variable ein Zeiger? -> memoryValue == Adresse ?? null
             {
-                if (memV != null) // kein Null-Pointer -> memV == Adresse
+                if (memoryValue != null) // kein Null-Pointer -> memoryValue == Adresse
                 {
-                    TypedValue? vov = null;
-                    if (e.MemoryStorage.Memory.ContainsKey((int)memV)) // Adresse definiert?
+                    TypedValue? nextMemoryCell = null;
+                    if (e.MemoryStorage.Memory.ContainsKey((int)memoryValue)) // Adresse definiert?
                     {
-                        vov = e.MemoryStorage.Memory[(int)memV]; // Lookup Adresse im Speicher
-                        memA = (int)memV;                       // Zeilwert oder neue Adresse
-                        for (int i = 1; i < p.Length; i++) // Vorgang für Zeigertiefe {p.Length} wiederholen
+                        addressValue = (int)memoryValue;
+                        nextMemoryCell = e.MemoryStorage.Memory[addressValue]; // Lookup Adresse im Speicher
+                                               // Zeilwert oder neue Adresse
+                        for (int i = 1; i < pointerChain.Length; i++) // Vorgang für Zeigertiefe {p.Length} wiederholen
                         {
                             // Abbruch, bei vorzeitigem Null-Zeiger oder nicht auflösbarem Ziel.
-                            if (vov.Value == null || !e.MemoryStorage.Memory.ContainsKey((int)vov.Value))
+                            if (nextMemoryCell.Value == null || !e.MemoryStorage.Memory.ContainsKey((int)nextMemoryCell.Value))
                             {
-                                vov = null;
+                                nextMemoryCell = null;
                                 break;
                             }
-                            memA = (int)vov.Value;
-                            vov = e.MemoryStorage.Memory[(int)vov.Value];
+                            addressValue = (int)nextMemoryCell.Value;
+                            nextMemoryCell = e.MemoryStorage.Memory[(int)nextMemoryCell.Value];
                         }
                     }
-                    memV = vov?.Value ?? null; // zuletzt gefundenen Wert übernehmen
+                    memoryValue = nextMemoryCell?.Value ?? null; // zuletzt gefundenen Wert übernehmen
                 }
             }
 
-            string valval = "";
-            string valval2 = "";
-            if (memV is int memValInt)
+            string stringMemoryValue = "";
+            string alternativeRepresentation = "";
+            if (memoryValue is int intMemoryValue)
             {
-                valval = memValInt.ToString();
-                if (memVal.Type.Contains("char"))
-                    valval2 = ((char)memValInt).ToString();
+                stringMemoryValue = intMemoryValue.ToString();
+                if (currentMemoryCell.Type.Contains("char"))
+                    alternativeRepresentation = ((char)intMemoryValue).ToString();
             }
-            else if (memV is double memValDouble)
+            else if (memoryValue is double doubleMemoryValue)
             {
-                valval = memValDouble.ToString("F2", CultureInfo.InvariantCulture);
+                stringMemoryValue = doubleMemoryValue.ToString("F2", CultureInfo.InvariantCulture);
             }
-            else if (memV is null)
+            else if (memoryValue is null)
             {
-                valval = "NULL";
+                stringMemoryValue = "NULL";
             }
 
-            protVar.ValueCheck = valval == protVar.Value || (!string.IsNullOrWhiteSpace(valval2) && valval2 == protVar.Value.Replace("'", ""));
-            if (protVar.ValueCheck == false)
+            protocolVariable.ValueCheck = stringMemoryValue == protocolVariable.Value || (!string.IsNullOrWhiteSpace(alternativeRepresentation) && alternativeRepresentation == protocolVariable.Value.Replace("'", ""));
+            if (protocolVariable.ValueCheck == false)
             {
                 // Prot wert ist mindestens zu berechnetem Wert Falsch (könnte bereits korrigiert sein)
-                protVar.ValueCheck = absVarVal == protVar.Value;
-                if (protVar.ValueCheck == true)
+                protocolVariable.ValueCheck = calculatedValue == protocolVariable.Value;
+                if (protocolVariable.ValueCheck == true)
                 {
                     // Lösung war falsch zur relativen berechneten, aber jetzt wieder korrekt zur Absoluten Lösung
-                    protVar.AbsCorrectedValue = true;
+                    protocolVariable.AbsCorrectedValue = true;
                 }
             }
 
-            // Anapssen der Fehlerhaften Variable im Speicher, damit bei der Weiterberechnung versucht wird die Folgefehler korrekt zu verarbeiten
+            // Anpassen der Fehlerhaften Variable im Speicher, damit bei der Weiterberechnung versucht wird die Folgefehler korrekt zu verarbeiten
             // Nur wenn Typefail oder Valuefail ODER wenn rückkehr zu originaler Lösung erkannt wurde
-            if (protVar.TypeCheck == false || protVar.ValueCheck == false || protVar.AbsCorrectedType == true || protVar.AbsCorrectedValue == true)
+            if (protocolVariable.TypeCheck == false 
+                || protocolVariable.ValueCheck == false 
+                || protocolVariable.AbsCorrectedType == true 
+                || protocolVariable.AbsCorrectedValue == true)
             {
-                object? nval = memV;
-                string ntype = memVal.Type;
+                object? replacedMemoryValue = memoryValue;
+                string replacedMemoryType = currentMemoryCell.Type;
 
-                // Wenn keiner der validen Typen gegeben ist -> Memory-Datatype beibehalten
-                if (protVar.TypeCheck == false && protVar.Type is "int" or "short" or "long" or "float" or "double" or "char")
+                // Wenn keiner der validen Typen gegeben ist -> Memory-Datatype beibehalten 
+                if (protocolVariable.TypeCheck == false && protocolVariable.Type is "int" or "short" or "long" or "float" or "double" or "char")
                 {
-                    ntype = protVar.Type;
+                    replacedMemoryType = protocolVariable.Type; //!TODO: Check, this is not the memory data type as stated above
                 }
 
                 try
                 {
-                    if (protVar.ValueCheck == false)
+                    if (protocolVariable.ValueCheck == false)
                     {
                         /*
                          * Typed Value erwartet ein Object, das allerdings innerhalb bereits correcten Types ist, weil in typed Value nur gecastet und nicht geparst wird!
                          * Also muss vorher in Abhängigkeit des Types ein Parsing erfolgen -> könnte auch failen
                          */
 
-                        if (ntype is "int" or "short" or "long")
+                        if (replacedMemoryType is "int" or "short" or "long")
                         {
-                            nval = int.Parse(protVar.Value);
+                            replacedMemoryValue = int.Parse(protocolVariable.Value);
                         }
-                        else if (ntype is "float" or "double")
+                        else if (replacedMemoryType is "float" or "double")
                         {
-                            nval = double.Parse(protVar.Value, CultureInfo.InvariantCulture);
+                            replacedMemoryValue = double.Parse(protocolVariable.Value, CultureInfo.InvariantCulture);
                         }
-                        else if (ntype is "char")
+                        else if (replacedMemoryType is "char")
                         {
-                            int tci;
-                            if (int.TryParse(protVar.Value, out tci))
+                            int temp;
+                            if (int.TryParse(protocolVariable.Value, out temp))
                             {
                                 // numerische Darstellung
-                                nval = (char)tci;
+                                replacedMemoryValue = (char)temp; 
                             }
                             else
                             {
-                                nval = Convert.ToChar(protVar.Value.Replace("'", ""));
+                                //!TODO Check this conversion
+                                replacedMemoryValue = Convert.ToChar(protocolVariable.Value.Replace("'", ""));
                             }
 
                         }
                     }
 
-                    e.MemoryStorage.Memory[addr] = new TypedValue(ntype, nval);
+                    e.MemoryStorage.Memory[addr] = new TypedValue(replacedMemoryType, replacedMemoryValue);
                     CorrectedVars.Add((name, addr));
                 }
                 catch (Exception exception)
                 {
                     Error(exception.Message);
-                    protVar.FailedToInclude = true;
+                    protocolVariable.FailedToInclude = true;
                 }
 
                 // Punktevergabe bei Rückkehr zur OriginalLösung
-                if (protVar.TypeCheck == true && protVar.ValueCheck == true && (protVar.AbsCorrectedType == protVar.AbsCorrectedValue || (!CurrentConfig.NeedTypes && protVar.AbsCorrectedValue)))
+                if (protocolVariable.TypeCheck == true && protocolVariable.ValueCheck == true && (protocolVariable.AbsCorrectedType == protocolVariable.AbsCorrectedValue || (!CurrentConfig.NeedTypes && protocolVariable.AbsCorrectedValue)))
                 {
                     GivenProtokol.Points += CurrentConfig.PointForMatch;
-                    protVar.GotPoint = true;
+                    protocolVariable.GotPoint = true;
                 }
 
                 //if (p.Length > 0)
@@ -520,19 +527,19 @@ public partial class MainWindowViewModel : ObservableObject
                 //}
 
                 if (CorrectedVars.Any(x => x.varAddr == addr))
-                    protVar.Corrected = true;
+                    protocolVariable.Corrected = true;
 
             }
             else
             {
 
                 //if (CorrectedVars.Contains((protVar.Name, addr)))
-                if (CorrectedVars.Any(x => x.varAddr == addr || x.varAddr == memA) || valval != absVarVal || memVal.Type != absVarType)
-                    protVar.Corrected = true;
+                if (CorrectedVars.Any(x => x.varAddr == addr || x.varAddr == addressValue) || stringMemoryValue != calculatedValue || currentMemoryCell.Type != calculatedType)
+                    protocolVariable.Corrected = true;
 
 
                 GivenProtokol.Points += CurrentConfig.PointForMatch;
-                protVar.GotPoint = true;
+                protocolVariable.GotPoint = true;
             }
         }
     }
