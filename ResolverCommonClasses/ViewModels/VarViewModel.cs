@@ -16,17 +16,31 @@ public class VarViewModel : ObservableValidator
         ValueRepresentation = valueRepresentation;
     }
 
+    // Protocol input values
     private string _name = string.Empty;
     private string _type = string.Empty;
     private string _value = string.Empty;
+    private string _valueRepresentation = string.Empty;
+
+    // Protocol check state
     private bool? _typeCheck = null;
     private bool? _valueCheck = null;
     private bool _corrected = false;
-    private bool _absCorrectedType;
-    private bool _absCorrectedValue;
-    private bool _gotPoint;
-    private string _valueRepresentation = string.Empty;
-    private bool _failedToInclude;
+    private bool _absCorrectedType = false;
+    private bool _absCorrectedValue = false;
+    private bool _gotPoint = false;
+    private bool _failedToInclude = false;
+
+    public void clearCheckState()
+    {
+        TypeCheck = null;
+        ValueCheck = null;
+        Corrected = false;
+        AbsCorrectedType = false;
+        AbsCorrectedValue = false;
+        GotPoint = false;
+        FailedToInclude = false;
+    }
 
     public int Index { get; set; }
 

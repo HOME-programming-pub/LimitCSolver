@@ -237,7 +237,7 @@ public partial class MainWindowViewModel : ObservableObject
         {
             CurrentConfig = newconfig;
             CalcedSolution = new ProtokolViewModel();
-            //CalculateSolution();
+            CalculateSolution();
         }
     }
 
@@ -311,7 +311,7 @@ public partial class MainWindowViewModel : ObservableObject
     private void CheckGivenProtokolAction()
     {
         if (CalcedSolution == null)
-            CalcNewSolutionAction();
+            CalculateSolution();
         CheckProtocol();
     }
 
@@ -374,7 +374,9 @@ public partial class MainWindowViewModel : ObservableObject
                 return;
             }
 
-            protocolVariable.GotPoint = false;
+
+
+            protocolVariable.clearCheckState();
 
             if (!CurrentConfig.NeedTypes)
             {
