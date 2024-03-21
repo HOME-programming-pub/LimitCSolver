@@ -337,7 +337,6 @@ public partial class MainWindowViewModel : ObservableObject
         // Prüfung ob Protokoll geladen
         if (GivenProtokol == null)
         {
-            Error($"Label {e.LabelNum} in Überprüfung erreicht, aber kein Protokoll zum Abgleich geladen?");
             return;
         }
 
@@ -347,8 +346,9 @@ public partial class MainWindowViewModel : ObservableObject
         // Eintrag aus dem zu prüfenden Protokoll
         var protocolEntry = GivenProtokol.Entrys.FirstOrDefault(pe => pe.Num == e.LabelNum);
         if (protocolEntry == null)
-        {
-            Error($"Label {e.LabelNum} in Überprüfung erreicht, aber im Protokoll scheint kein entsprechender Eintrag vorhanden zu sein!");
+        {        
+            GivenProtokol.ProtocolOrLabelMismatchMessage = $"Label {e.LabelNum} in Überprüfung erreicht, aber im Protokoll scheint kein entsprechender Eintrag vorhanden zu sein!";
+            GivenProtokol.ProtocolLabelOrVarMismatch = true;
             return;
         }
 
@@ -369,8 +369,9 @@ public partial class MainWindowViewModel : ObservableObject
 
             if (protocolVariable == null)
             {
-                Error($"Fehler bei Label {e.LabelNum}, die sichtbare Variable {name} scheint" +
-                      $" im Protokoll an der entsprechenden Stelle nicht definiert zu sein!");
+                GivenProtokol.ProtocolOrLabelMismatchMessage = $"Fehler bei Label {e.LabelNum}, die sichtbare Variable {name} scheint" +
+                      $" im Protokoll an der entsprechenden Stelle nicht definiert zu sein!";
+                GivenProtokol.ProtocolLabelOrVarMismatch = true;
                 return;
             }
 
@@ -511,7 +512,7 @@ public partial class MainWindowViewModel : ObservableObject
                 }
                 catch (Exception exception)
                 {
-                    Error(exception.Message);
+                    protocolVariable.FailedToIncludeMessage = exception.Message;
                     protocolVariable.FailedToInclude = true;
                 }
 
@@ -561,8 +562,7 @@ public partial class MainWindowViewModel : ObservableObject
         {
             if (!e.MemoryStorage.Memory.ContainsKey(addr))
             {
-                Error($"Das hätte nicht passieren dürfen! Es wurde eine Adresse übergeben, welche keinen entsprechenden Speichereintrag besitzt! varName: {name} varAddr: {addr}");
-                return;
+                throw new($"Das hätte nicht passieren dürfen! Es wurde eine Adresse übergeben, welche keinen entsprechenden Speichereintrag besitzt! varName: {name} varAddr: {addr}");
             }
 
             TypedValue typedValue = e.MemoryStorage.Memory[addr];
@@ -621,11 +621,6 @@ public partial class MainWindowViewModel : ObservableObject
 
         CalcedSolution.Entrys.Add(newProtocolEntry);
 
-    }
-
-    public static void Error(string str)
-    {
-        MessageBox.Show(str);
     }
 
 }

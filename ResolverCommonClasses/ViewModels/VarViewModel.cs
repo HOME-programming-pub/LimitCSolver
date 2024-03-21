@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace CommonClasses.ViewModels;
 
-public class VarViewModel : ObservableValidator
+public partial class VarViewModel : ObservableValidator
 {
     public VarViewModel(string name, string type, string value, string valueRepresentation)
     {
@@ -30,6 +30,8 @@ public class VarViewModel : ObservableValidator
     private bool _absCorrectedValue = false;
     private bool _gotPoint = false;
     private bool _failedToInclude = false;
+    [ObservableProperty]
+    private string _failedToIncludeMessage = String.Empty;
 
     public void clearCheckState()
     {
@@ -40,6 +42,7 @@ public class VarViewModel : ObservableValidator
         AbsCorrectedValue = false;
         GotPoint = false;
         FailedToInclude = false;
+        FailedToIncludeMessage = String.Empty;
     }
 
     public int Index { get; set; }

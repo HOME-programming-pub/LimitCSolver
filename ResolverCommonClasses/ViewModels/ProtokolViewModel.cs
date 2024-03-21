@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace CommonClasses.ViewModels;
 
-public class ProtokolViewModel : ObservableObject
+public partial class ProtokolViewModel : ObservableObject
 {
     public ProtokolViewModel()
     {
@@ -12,6 +12,11 @@ public class ProtokolViewModel : ObservableObject
 
     private ObservableCollection<ProtokolEntryViewModel> _entrys = new();
     private decimal? _points = null;
+
+    [ObservableProperty]
+    private bool _protocolLabelOrVarMismatch = false;
+    [ObservableProperty]
+    private string _protocolOrLabelMismatchMessage = String.Empty;
 
     public ObservableCollection<ProtokolEntryViewModel> Entrys
     {

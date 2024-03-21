@@ -69,6 +69,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" FontWeight="Bold" HorizontalAlignment="Center" Margin="0 5">Eingabeprotokoll</TextBlock>
                     <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
@@ -103,6 +104,11 @@
                                                         <TextBlock Text="{Binding Name}"></TextBlock>
                                                         <TextBlock Text="="></TextBlock>
                                                         <TextBox Text="{Binding Value, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True, ValidatesOnDataErrors=True}" Width="50">
+                                                            <TextBox.ToolTip>
+                                                                <ToolTip Visibility="Visible" >
+                                                                    <TextBlock Text="{Binding FailedToIncludeMessage, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                </ToolTip>
+                                                            </TextBox.ToolTip>
                                                             <TextBox.Style>
                                                                 <Style TargetType="{x:Type TextBox}">
                                                                     <Style.Triggers>
@@ -164,7 +170,8 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </ScrollViewer>
-                    <StackPanel Grid.Row="2" Orientation="Horizontal">
+                    <TextBlock Grid.Row="2" Text="{Binding GivenProtokol.ProtocolOrLabelMismatchMessage, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding GivenProtokol.ProtocolLabelOrVarMismatch, UpdateSourceTrigger=PropertyChanged}"></TextBlock>
+                    <StackPanel Grid.Row="3" Orientation="Horizontal">
                         <Label FontWeight="Bold" FontSize="16">Punkte:</Label>
                         <TextBlock FontWeight="Bold" FontSize="16" Text="{Binding GivenProtokol.Points}" VerticalAlignment="Center"></TextBlock>
                     </StackPanel>
