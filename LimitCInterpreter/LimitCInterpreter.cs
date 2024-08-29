@@ -1,12 +1,11 @@
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using Model.Memory;
-using Model.SubTypes;
-using System;
+using LimitCSolver.LimitCInterpreter.Memory;
+using LimitCSolver.LimitCInterpreter.SubTypes;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace Model;
+namespace LimitCSolver.LimitCInterpreter;
 
 public partial class LimitCInterpreter : LimitCBaseVisitor<object?>
 {

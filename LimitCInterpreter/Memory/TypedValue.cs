@@ -1,6 +1,4 @@
-﻿    using System.Security.AccessControl;
-
-namespace Model.Memory;
+﻿namespace LimitCSolver.LimitCInterpreter.Memory;
 
 public class TypedValue
 {

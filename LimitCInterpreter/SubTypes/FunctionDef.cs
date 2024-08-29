@@ -1,6 +1,6 @@
 ﻿using Antlr4.Runtime.Tree;
 
-namespace Model.SubTypes;
+namespace LimitCSolver.LimitCInterpreter.SubTypes;
 
 public class FunctionDef
 {

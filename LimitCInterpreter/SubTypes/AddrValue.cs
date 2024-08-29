@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace Model.SubTypes;
+namespace LimitCSolver.LimitCInterpreter.SubTypes;
 
 public class AddrValue
 {

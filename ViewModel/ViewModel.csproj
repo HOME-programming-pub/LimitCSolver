@@ -17,7 +17,7 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <ProjectReference Include="..\Model\Model.csproj" />
+    <ProjectReference Include="..\Model\LimitCSolver.LimitCInterpreter.csproj" />
 	<ProjectReference Include="..\_Modul_CreateLimitC\_Modul_CreateLimitC.csproj" />
   </ItemGroup>
 

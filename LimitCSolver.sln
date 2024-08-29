@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Model", "Model\Model.csproj", "{18471C08-7EBD-4DE0-A833-AA591E9B8EB4}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ViewModel", "ViewModel\ViewModel.csproj", "{D4CC3EB6-E1AF-4499-900D-6BF484AE84B5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "View", "View\View.csproj", "{CE49A5E8-5395-4690-8718-2458706B1F40}"
@@ -15,16 +13,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_Modul_LimitCProtokollInput
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_Modul_CreateLimitC", "_Modul_CreateLimitC\_Modul_CreateLimitC.csproj", "{27871B90-4E23-428C-A1E6-95F4354515DB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A7143092-6731-42A8-8C3F-4E5B3B279F83}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.targets = Directory.Build.targets
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LimitCInterpreter", "LimitCInterpreter\LimitCInterpreter.csproj", "{AE396100-96A7-422B-8B1A-9C69D94C8956}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{18471C08-7EBD-4DE0-A833-AA591E9B8EB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{18471C08-7EBD-4DE0-A833-AA591E9B8EB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{18471C08-7EBD-4DE0-A833-AA591E9B8EB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{18471C08-7EBD-4DE0-A833-AA591E9B8EB4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D4CC3EB6-E1AF-4499-900D-6BF484AE84B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D4CC3EB6-E1AF-4499-900D-6BF484AE84B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4CC3EB6-E1AF-4499-900D-6BF484AE84B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -45,6 +46,10 @@ Global
 		{27871B90-4E23-428C-A1E6-95F4354515DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27871B90-4E23-428C-A1E6-95F4354515DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27871B90-4E23-428C-A1E6-95F4354515DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE396100-96A7-422B-8B1A-9C69D94C8956}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE396100-96A7-422B-8B1A-9C69D94C8956}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE396100-96A7-422B-8B1A-9C69D94C8956}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE396100-96A7-422B-8B1A-9C69D94C8956}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
