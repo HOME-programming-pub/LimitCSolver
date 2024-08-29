@@ -1,7 +1,6 @@
-using Model.SubTypes;
+using SubTypes;
 
-namespace Model;
-
+namespace LimitCSolver.LimitCInterpreter;
 public class LimitCFunctionTreeBuilder : LimitCBaseVisitor<object?>
 {
 

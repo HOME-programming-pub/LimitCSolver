@@ -1,4 +1,4 @@
-﻿namespace Model.Memory;
+﻿namespace LimitCSolver.LimitCInterpreter.Memory;
 
 public class MemoryStorage
 {

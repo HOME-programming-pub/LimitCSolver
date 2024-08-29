@@ -1,6 +1,6 @@
-﻿using Model.Memory;
+﻿using LimitCSolver.LimitCInterpreter.Memory;
 
-namespace Model.SubTypes;
+namespace LimitCSolver.LimitCInterpreter.SubTypes;
 
 public class LabelCheckPointEventArgs : EventArgs
 {

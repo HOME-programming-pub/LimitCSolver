@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <!-- Custom Properties -->
+    <!--<CompanyName>MyCompany</CompanyName>-->
+    <ProjectName>LimitCSolver</ProjectName>
+    <!-- Redefine MSBuild Properties 
+    <Company>$(CompanyName)</Company>-->
+    <RootNamespace>$(ProjectName).$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+  </PropertyGroup>
+</Project>

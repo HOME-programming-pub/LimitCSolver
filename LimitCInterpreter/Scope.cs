@@ -1,4 +1,4 @@
-﻿namespace Model;
+﻿namespace LimitCSolver.LimitCInterpreter;
 
 public class Scope
 {

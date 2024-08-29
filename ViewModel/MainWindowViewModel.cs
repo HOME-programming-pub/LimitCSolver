@@ -1,9 +1,9 @@
 ﻿using Antlr4.Runtime;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Model;
-using Model.Memory;
-using Model.SubTypes;
+using Interpreter;
+using Interpreter.Memory;
+using Interpreter.SubTypes;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using ViewModel.JsonTemplate;
