@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows;
 
-namespace View;
+namespace LimitCSolver.MainApplication.View;
 
 public class GridHelpers
 {
@@ -82,7 +82,7 @@ public class GridHelpers
 
         for (int i = 0; i < (int)e.NewValue; i++)
             grid.ColumnDefinitions.Add(
-                new ColumnDefinition() { Width = GridLength.Auto, SharedSizeGroup = "a"});
+                new ColumnDefinition() { Width = GridLength.Auto, SharedSizeGroup = "a" });
 
     }
 

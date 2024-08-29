@@ -18,8 +18,9 @@ using ViewModel;
 using System.Reflection;
 using CreateLimitC;
 using CommunityToolkit.Mvvm.ComponentModel;
+using LimitCSolver.MainApplication.ViewModel;
 
-namespace View;
+namespace LimitCSolver.MainApplication.View;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml

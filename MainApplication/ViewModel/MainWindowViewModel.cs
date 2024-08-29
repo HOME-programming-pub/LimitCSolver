@@ -1,26 +1,21 @@
 ﻿using Antlr4.Runtime;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using LimitCSolver.LimitCInterpreter;
+using LimitCSolver.MainApplication.ViewModel;
 using LimitCSolver.LimitCInterpreter.Memory;
 using LimitCSolver.LimitCInterpreter.SubTypes;
+using LimitCSolver.LimitCInterpreter.Parser;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using ViewModel.JsonTemplate;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Windows;
-using Microsoft.VisualBasic;
 using System.ComponentModel;
 using System.Windows.Input;
 
-namespace ViewModel;
-
+namespace LimitCSolver.MainApplication.ViewModel;
 
 public partial class MainWindowViewModel : ObservableObject
 {
@@ -311,7 +306,7 @@ public partial class MainWindowViewModel : ObservableObject
         CorrectedVars.Clear();
 
         var program = parse(CurrentConfig.Code);
-        var interpreter = new LimitCInterpreter();
+        var interpreter = new LimitCInterpreter.LimitCInterpreter();
 
         interpreter.LabelCheckPointReached += VisitorOnLabelCheckPointReachedCheckProtokol;
         interpreter.evaluate(program);
@@ -330,7 +325,7 @@ public partial class MainWindowViewModel : ObservableObject
         }
         CalcedSolution = new ProtokolViewModel();
         var program = parse(CurrentConfig.Code);
-        var interpreter = new LimitCInterpreter();
+        var interpreter = new LimitCInterpreter.LimitCInterpreter();
 
         interpreter.LabelCheckPointReached += VisitorOnLabelCheckPointReachedCreateSolution;
         interpreter.evaluate(program);
@@ -417,7 +412,7 @@ public partial class MainWindowViewModel : ObservableObject
     private ProtokolViewModel ExtractEmptyProtocolFromProgram(string code)
     {
         var newProtocol = new ProtokolViewModel();
-        var interpreter = new LimitCInterpreter();
+        var interpreter = new LimitCInterpreter.LimitCInterpreter();
         var program = parse(CurrentConfig.Code);
 
         interpreter.LabelCheckPointReached += (sender, args) =>

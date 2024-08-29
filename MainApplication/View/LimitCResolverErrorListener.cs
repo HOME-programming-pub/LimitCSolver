@@ -2,7 +2,7 @@
 using System.Windows;
 using Antlr4.Runtime;
 
-namespace ViewModel;
+namespace LimitCSolver.MainApplication.View;
 
 public class LimitCResolverErrorListener : BaseErrorListener
 {
@@ -11,7 +11,7 @@ public class LimitCResolverErrorListener : BaseErrorListener
     {
 
         MessageBox.Show(msg);
-        
+
         base.SyntaxError(output, recognizer, offendingSymbol, line, charPositionInLine, msg, e);
     }
 }

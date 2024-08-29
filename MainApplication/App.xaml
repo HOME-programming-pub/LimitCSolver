@@ -1,8 +1,8 @@
 ﻿<Application x:Class="View.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:View"
-             StartupUri="MainWindow.xaml">
+             xmlns:local="clr-namespace:LimitCSolver.MainApplication.View"
+             StartupUri="View/MainWindow.xaml">
     <Application.Resources>
         <local:ViewModelLocator x:Key="Locator" />
     </Application.Resources>

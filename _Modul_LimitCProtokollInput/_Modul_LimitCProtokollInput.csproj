@@ -14,7 +14,7 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\View\View.csproj" />
+    <ProjectReference Include="..\View\MainApplication.csproj" />
 	<ProjectReference Include="..\ViewModel\ViewModel.csproj" />
   </ItemGroup>
 

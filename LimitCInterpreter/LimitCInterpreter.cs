@@ -1,6 +1,7 @@
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using LimitCSolver.LimitCInterpreter.Memory;
+using LimitCSolver.LimitCInterpreter.Parser;
 using LimitCSolver.LimitCInterpreter.SubTypes;
 using System.Globalization;
 using System.Text.RegularExpressions;
