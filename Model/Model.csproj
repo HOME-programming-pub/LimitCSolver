@@ -8,16 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="gen_bck\**" />
-    <EmbeddedResource Remove="gen_bck\**" />
-    <None Remove="gen_bck\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="LimitC.g4" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Antlr4 Include="LimitC.g4" />
   </ItemGroup>
 
@@ -25,7 +15,5 @@
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
     <PackageReference Include="Antlr4BuildTasks" Version="12.8.0" />
   </ItemGroup>
-
-
 
 </Project>
