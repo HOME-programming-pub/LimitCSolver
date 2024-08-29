@@ -7,7 +7,7 @@
         xmlns:viewModels="clr-namespace:LimitCSolver.MainApplication.View"
         xmlns:viewModels1="clr-namespace:LimitCSolver.MainApplication.ViewModel"
         xmlns:helper="clr-namespace:LimitCSolver.MainApplication.View" 
-        xmlns:createLimitC="clr-namespace:CreateLimitC;assembly=_Modul_CreateLimitC"
+        xmlns:createLimitC="clr-namespace:LimitCSolver.MainApplication.View"
         mc:Ignorable="d"
         x:Name="mainWindow"
         DataContext="{Binding Source={StaticResource Locator}, Path=MainWindowViewModel}"

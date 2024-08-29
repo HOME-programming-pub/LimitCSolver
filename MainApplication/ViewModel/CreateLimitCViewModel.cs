@@ -1,11 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
 using System.Globalization;
-using System.Threading;
-using CreateLimitC;
 using System.Windows.Input;
 using System.Windows;
+using LimitCSolver.LimitCGenerator;
+
+namespace LimitCSolver.MainApplication.ViewModel;
 
 public partial class CreateLimitCViewModel : ObservableObject
 {

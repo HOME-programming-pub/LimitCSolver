@@ -12,7 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 
-namespace CreateLimitC;
+namespace LimitCSolver.MainApplication.View;
 
 public partial class CreateLimitCView : UserControl
 {

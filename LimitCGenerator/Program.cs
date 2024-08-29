@@ -8,7 +8,7 @@ using System.Reflection.Metadata;
 using System.Diagnostics;
 using System.Data;
 
-namespace CreateLimitC;
+namespace LimitCSolver.LimitCGenerator;
 
 public class VariableInfo
 {
@@ -90,7 +90,7 @@ public class CodeGenerator
     public void GenerateCode()
     {
         StringBuilder code = new StringBuilder();
-        
+
         List<Dictionary<char, VariableInfo>> scopeStack = new List<Dictionary<char, VariableInfo>>();
         Dictionary<char, VariableInfo> globalScope = new Dictionary<char, VariableInfo>();
         Dictionary<char, VariableInfo> currentScope = new Dictionary<char, VariableInfo>();
@@ -115,7 +115,7 @@ public class CodeGenerator
             int numGlobals = rand.Next(3);
             for (int j = 0; j < numGlobals; j++)
             {
-                HandleNewVariable(code, "", new Dictionary<char, VariableInfo>() , globalScope, types, scopeStack);
+                HandleNewVariable(code, "", new Dictionary<char, VariableInfo>(), globalScope, types, scopeStack);
             }
         }
 
@@ -127,12 +127,12 @@ public class CodeGenerator
 
         // Generiere Code-Blöcke
         int currentDepth = 1;
-        int labelCount = rand.Next(minLabel, maxLabel + 1);                                 
+        int labelCount = rand.Next(minLabel, maxLabel + 1);
         int i = 1;
 
         while (i <= labelCount)                                             // Schleife für die Anzahl der Labels
         {
-            int randomDepth = rand.Next(minDepth +1, maxDepth + 2);         // Zufällige Tiefe pro Block (1 ist für globalScope reserviert)                 
+            int randomDepth = rand.Next(minDepth + 1, maxDepth + 2);         // Zufällige Tiefe pro Block (1 ist für globalScope reserviert)                 
             for (int d = 0; d < randomDepth; d++)
             {
                 if (i > maxLabel) break;                                    // Verlässt die Schleife, wenn die maximale Anzahl von Labels erreicht ist
@@ -146,7 +146,7 @@ public class CodeGenerator
             }
 
             // Schließe Blöcke
-            if (currentDepth >= randomDepth) 
+            if (currentDepth >= randomDepth)
             {
                 for (int j = currentDepth; j > 1; j--)
                 {
@@ -161,13 +161,13 @@ public class CodeGenerator
                         i++;
                     }
                     // Füge zuffälig ein Label hinzu, wenn der Block geschlossen wird
-                    else if (rand.Next(2) == 0 && scopeStack.Count > 1 && i <= maxLabel)  
+                    else if (rand.Next(2) == 0 && scopeStack.Count > 1 && i <= maxLabel)
                     {
                         AddLabel(code, indent, i);
                         i++;
                     }
                 }
-                currentDepth = 1; 
+                currentDepth = 1;
             }
         }
 
@@ -212,7 +212,7 @@ public class CodeGenerator
     Funktionen
     ****************************************************************************************************************/
 
-    private void HandleOperations (StringBuilder code, string indent, ref int currentDepth, List<int> possibleActions, Dictionary<char, VariableInfo> currentScope, List<string> types, List<Dictionary<char, VariableInfo>> scopeStack)
+    private void HandleOperations(StringBuilder code, string indent, ref int currentDepth, List<int> possibleActions, Dictionary<char, VariableInfo> currentScope, List<string> types, List<Dictionary<char, VariableInfo>> scopeStack)
     {
         Dictionary<char, VariableInfo> otherScopes = new Dictionary<char, VariableInfo>();
         foreach (var scope in scopeStack)
@@ -236,7 +236,7 @@ public class CodeGenerator
             int action = possibleActions[actionIndex];
 
             // Korrektur bei schweren Aufgaben (Wenn es mehr als 4 mögliche Aktionen gibt, dann wird die Wahrscheinlichkeit für eine Deklaration erhöht)
-            if (possibleActions.Count > 4 && (currentScope.Count + otherScopes.Count < 3))
+            if (possibleActions.Count > 4 && currentScope.Count + otherScopes.Count < 3)
             {
                 if (otherScopes.Count != 0 && rand.Next(2) == 0) { HandleShadowVariable(code, indent, otherScopes, currentScope, types, scopeStack); }
                 else { HandleNewVariable(code, indent, otherScopes, currentScope, types, scopeStack); }
@@ -321,15 +321,15 @@ public class CodeGenerator
         // Wenn nur 1 Variable verfügbar ist, dann zwei zufällige Variablen
         else
         {
-            if (isMultiplication) {HandleTwoRandomNumbersMultiplication(isVariableDeclaration, code, indent, varName, varType, currentScope, types, scopeStack);}
-            else {HandleTwoRandomNumbersDivision(isVariableDeclaration, code, indent, varName, varType, currentScope, types, scopeStack);}
+            if (isMultiplication) { HandleTwoRandomNumbersMultiplication(isVariableDeclaration, code, indent, varName, varType, currentScope, types, scopeStack); }
+            else { HandleTwoRandomNumbersDivision(isVariableDeclaration, code, indent, varName, varType, currentScope, types, scopeStack); }
         }
     }
 
     private void HandleOneVariableDivision(bool isVariableDeclaration, StringBuilder code, string indent, char varName, string varType, float var1Value, string var1Type, char var1Name, Dictionary<char, VariableInfo> currentScope, List<string> types, List<Dictionary<char, VariableInfo>> scopeStack)
     {
         float result, randomValue1;
-        List<float> divisors = new List<float> {2, 4, 5, 10};
+        List<float> divisors = new List<float> { 2, 4, 5, 10 };
         int castPosition = rand.Next(2);
         string castType = "";
         string operation1 = rand.Next(2) == 0 ? "++" : "--";
@@ -340,15 +340,15 @@ public class CodeGenerator
         // Zufällige Entscheidung, ob Typecasting und/oder Increment/Decrement
         if (allowIncrementDecrement && rand.Next(2) == 0)
         {
-            shouldIncrementDecrement = true;                      
+            shouldIncrementDecrement = true;
             if (allowExplicitTypecasting && rand.Next(2) == 0)
             {
-                shouldTypecasting = true;                         
+                shouldTypecasting = true;
             }
         }
         else if (allowExplicitTypecasting && rand.Next(2) == 0)
         {
-            shouldTypecasting = true;                            
+            shouldTypecasting = true;
             if (allowIncrementDecrement && rand.Next(2) == 0)
             {
                 shouldIncrementDecrement = true;
@@ -360,7 +360,7 @@ public class CodeGenerator
         {
             do
             {
-                castType = types[rand.Next(types.Count)];     
+                castType = types[rand.Next(types.Count)];
             } while (castType == var1Type);
         }
 
@@ -379,11 +379,12 @@ public class CodeGenerator
         }
 
         // Generierung einer Zufallszahl
-        if (castPosition == 0){
+        if (castPosition == 0)
+        {
             if (varType == "char")
             {
                 List<float> validDivisors = new List<float>();
-                for ( randomValue1 = -10; randomValue1 <= 10; randomValue1++)   // Suche nach gültigen Divisoren (meistens 1)
+                for (randomValue1 = -10; randomValue1 <= 10; randomValue1++)   // Suche nach gültigen Divisoren (meistens 1)
                 {
                     if (var1Value / randomValue1 >= 97 && var1Value / randomValue1 <= 122) { validDivisors.Add(randomValue1); }
                 }
@@ -403,7 +404,7 @@ public class CodeGenerator
             if (varType == "char")
             {
                 List<float> validDivisors = new List<float>();
-                for ( randomValue1 = -10; randomValue1 <= 10; randomValue1++)   // Suche nach gültigen Divisoren (meistens 1)
+                for (randomValue1 = -10; randomValue1 <= 10; randomValue1++)   // Suche nach gültigen Divisoren (meistens 1)
                 {
                     if (randomValue1 / var1Value >= 97 && randomValue1 / var1Value <= 122) { validDivisors.Add(randomValue1); }
                 }
@@ -422,11 +423,12 @@ public class CodeGenerator
         randomValue1 = (float)Math.Round(randomValue1, 2);
 
         // Berechnung des Ergebnisses und Generierung des Codes
-        if (castPosition == 0){
+        if (castPosition == 0)
+        {
             if (shouldTypecasting && shouldIncrementDecrement)
             {
-                if (var1Type == "float"){ result = (int)var1Value / randomValue1;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value / randomValue1;}
+                if (var1Type == "float") { result = (int)var1Value / randomValue1; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value / randomValue1; }
 
                 if (isVariableDeclaration)
                 {
@@ -441,8 +443,8 @@ public class CodeGenerator
             }
             else if (shouldTypecasting)
             {
-                if (var1Type == "float"){ result = (int)var1Value / randomValue1;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value / randomValue1;}
+                if (var1Type == "float") { result = (int)var1Value / randomValue1; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value / randomValue1; }
 
                 if (isVariableDeclaration)
                 {
@@ -486,11 +488,12 @@ public class CodeGenerator
                 }
             }
         }
-        else {
+        else
+        {
             if (shouldTypecasting && shouldIncrementDecrement)
             {
-                if (var1Type == "float"){ result = (int)var1Value / randomValue1;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value / randomValue1;}
+                if (var1Type == "float") { result = (int)var1Value / randomValue1; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value / randomValue1; }
 
                 if (isVariableDeclaration)
                 {
@@ -505,8 +508,8 @@ public class CodeGenerator
             }
             else if (shouldTypecasting)
             {
-                if (var1Type == "float"){ result = (int)var1Value / randomValue1;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value / randomValue1;}
+                if (var1Type == "float") { result = (int)var1Value / randomValue1; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value / randomValue1; }
 
                 if (isVariableDeclaration)
                 {
@@ -546,7 +549,7 @@ public class CodeGenerator
                 else
                 {
                     code.Append($"{indent}{varName} = {randomValue1} / {var1Name};\\r\\n");
-                    if (debug && debugDivision) { Console.WriteLine($"* Division: {varName} = {randomValue1} / {var1Name}"); }                
+                    if (debug && debugDivision) { Console.WriteLine($"* Division: {varName} = {randomValue1} / {var1Name}"); }
                 }
             }
         }
@@ -564,21 +567,21 @@ public class CodeGenerator
         {
             if (varType == "float")
             {
-                if (!currentScope.ContainsKey(varName)) {currentScope.Add(varName, new VariableInfo { Type = varType, Value = result });}
+                if (!currentScope.ContainsKey(varName)) { currentScope.Add(varName, new VariableInfo { Type = varType, Value = result }); }
             }
             else
             {
-                if (!currentScope.ContainsKey(varName)) {currentScope.Add(varName, new VariableInfo { Type = varType, Value = (int)result });}
+                if (!currentScope.ContainsKey(varName)) { currentScope.Add(varName, new VariableInfo { Type = varType, Value = (int)result }); }
             }
         }
         // Sonst -> Aktualisierung des Wertes im ScopeStack
         else
         {
-            if (varType == "float") {UpdateVariableInScopeStack(varName, result, varType, scopeStack);}
-            else {UpdateVariableInScopeStack(varName, (int)result, varType, scopeStack);}
+            if (varType == "float") { UpdateVariableInScopeStack(varName, result, varType, scopeStack); }
+            else { UpdateVariableInScopeStack(varName, (int)result, varType, scopeStack); }
         }
         // Inkrement/Dekrement -> Aktualisierung des Wertes im ScopeStack
-        if (shouldIncrementDecrement && varName != var1Name){UpdateVariableInScopeStack(var1Name, var1Value, var1Type, scopeStack);}                     
+        if (shouldIncrementDecrement && varName != var1Name) { UpdateVariableInScopeStack(var1Name, var1Value, var1Type, scopeStack); }
     }
 
     private void HandleOneVariableMultiplication(bool isVariableDeclaration, StringBuilder code, string indent, char varName, string varType, float var1Value, string var1Type, char var1Name, Dictionary<char, VariableInfo> currentScope, List<string> types, List<Dictionary<char, VariableInfo>> scopeStack)
@@ -594,15 +597,15 @@ public class CodeGenerator
         // Zufällige Entscheidung, ob Typecasting und/oder Increment/Decrement
         if (allowIncrementDecrement && rand.Next(2) == 0)
         {
-            shouldIncrementDecrement = true;                      
+            shouldIncrementDecrement = true;
             if (allowExplicitTypecasting && rand.Next(2) == 0)
             {
-                shouldTypecasting = true;                         
+                shouldTypecasting = true;
             }
         }
         else if (allowExplicitTypecasting && rand.Next(2) == 0)
         {
-            shouldTypecasting = true;                            
+            shouldTypecasting = true;
             if (allowIncrementDecrement && rand.Next(2) == 0)
             {
                 shouldIncrementDecrement = true;
@@ -614,7 +617,7 @@ public class CodeGenerator
         {
             do
             {
-                castType = types[rand.Next(types.Count)];     
+                castType = types[rand.Next(types.Count)];
             } while (castType == var1Type);
         }
 
@@ -629,7 +632,7 @@ public class CodeGenerator
         if (varType == "char")
         {
             List<float> validMultipliers = new List<float>();
-            for ( randomValue1 = -10; randomValue1 <= 10; randomValue1++)   // Suche nach gültigen Multiplikatoren
+            for (randomValue1 = -10; randomValue1 <= 10; randomValue1++)   // Suche nach gültigen Multiplikatoren
             {
                 result = var1Value * randomValue1;
                 if (result >= 97 && result <= 122) { validMultipliers.Add(randomValue1); }
@@ -650,11 +653,12 @@ public class CodeGenerator
         }
 
         // Berechnung des Ergebnisses und Generierung des Codes
-        if (castPosition == 0){
+        if (castPosition == 0)
+        {
             if (shouldTypecasting && shouldIncrementDecrement)
             {
-                if (var1Type == "float"){ result = (int)var1Value * randomValue1;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value * randomValue1;}
+                if (var1Type == "float") { result = (int)var1Value * randomValue1; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value * randomValue1; }
 
                 if (isVariableDeclaration)
                 {
@@ -669,8 +673,8 @@ public class CodeGenerator
             }
             else if (shouldTypecasting)
             {
-                if (var1Type == "float"){ result = (int)var1Value * randomValue1;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value * randomValue1;}
+                if (var1Type == "float") { result = (int)var1Value * randomValue1; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value * randomValue1; }
 
                 if (isVariableDeclaration)
                 {
@@ -714,11 +718,12 @@ public class CodeGenerator
                 }
             }
         }
-        else {
+        else
+        {
             if (shouldTypecasting && shouldIncrementDecrement)
             {
-                if (var1Type == "float"){ result = (int)var1Value * randomValue1;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value * randomValue1;}
+                if (var1Type == "float") { result = (int)var1Value * randomValue1; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value * randomValue1; }
 
                 if (isVariableDeclaration)
                 {
@@ -733,8 +738,8 @@ public class CodeGenerator
             }
             else if (shouldTypecasting)
             {
-                if (var1Type == "float"){ result = (int)var1Value * randomValue1;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value * randomValue1;}
+                if (var1Type == "float") { result = (int)var1Value * randomValue1; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value * randomValue1; }
 
                 if (isVariableDeclaration)
                 {
@@ -774,7 +779,7 @@ public class CodeGenerator
                 else
                 {
                     code.Append($"{indent}{varName} = {randomValue1} * {var1Name};\\r\\n");
-                    if (debug && debugMultiplication) { Console.WriteLine($"* Multiplication: {varName} = {randomValue1} * {var1Name}"); }                
+                    if (debug && debugMultiplication) { Console.WriteLine($"* Multiplication: {varName} = {randomValue1} * {var1Name}"); }
                 }
             }
         }
@@ -792,36 +797,37 @@ public class CodeGenerator
         {
             if (varType == "float")
             {
-                if (!currentScope.ContainsKey(varName)) {currentScope.Add(varName, new VariableInfo { Type = varType, Value = result });}
+                if (!currentScope.ContainsKey(varName)) { currentScope.Add(varName, new VariableInfo { Type = varType, Value = result }); }
             }
             else
             {
-                if (!currentScope.ContainsKey(varName)) {currentScope.Add(varName, new VariableInfo { Type = varType, Value = (int)result });}
+                if (!currentScope.ContainsKey(varName)) { currentScope.Add(varName, new VariableInfo { Type = varType, Value = (int)result }); }
             }
         }
         // Sonst -> Aktualisierung des Wertes im ScopeStack
         else
         {
-            if (varType == "float") {UpdateVariableInScopeStack(varName, result, varType, scopeStack);}
-            else {UpdateVariableInScopeStack(varName, (int)result, varType, scopeStack);}
+            if (varType == "float") { UpdateVariableInScopeStack(varName, result, varType, scopeStack); }
+            else { UpdateVariableInScopeStack(varName, (int)result, varType, scopeStack); }
         }
         // Inkrement/Dekrement -> Aktualisierung des Wertes im ScopeStack
-        if (shouldIncrementDecrement && varName != var1Name){UpdateVariableInScopeStack(var1Name, var1Value, var1Type, scopeStack);}                     
+        if (shouldIncrementDecrement && varName != var1Name) { UpdateVariableInScopeStack(var1Name, var1Value, var1Type, scopeStack); }
     }
 
-    private void HandleTwoRandomNumbersDivision (bool isVariableDeclaration, StringBuilder code, string indent, char varName, string varType, Dictionary<char, VariableInfo> currentScope, List<string> types, List<Dictionary<char, VariableInfo>> scopeStack)
+    private void HandleTwoRandomNumbersDivision(bool isVariableDeclaration, StringBuilder code, string indent, char varName, string varType, Dictionary<char, VariableInfo> currentScope, List<string> types, List<Dictionary<char, VariableInfo>> scopeStack)
     {
         float result, randomValue1, randomValue2, baseValue;
-        List<float> divisors = new List<float> {2, 4, 5, 10};
+        List<float> divisors = new List<float> { 2, 4, 5, 10 };
 
         // Generierung von zwei Zufallszahlen
-        if (varType == "char"){
+        if (varType == "char")
+        {
             do
             {
                 randomValue1 = divisors[rand.Next(divisors.Count)];
                 baseValue = rand.Next(1, 1001) / 2.0f;
                 randomValue2 = baseValue * randomValue1;
-            } while ((randomValue2 / randomValue1) < 97 || (randomValue2 / randomValue1) > 122);
+            } while (randomValue2 / randomValue1 < 97 || randomValue2 / randomValue1 > 122);
         }
         else
         {
@@ -833,7 +839,7 @@ public class CodeGenerator
         // Berechnung des Ergebnisses
         result = randomValue2 / randomValue1;
         result = (float)Math.Round(result, 2);
-        
+
         // Generierung des Codes
         if (isVariableDeclaration)
         {
@@ -852,32 +858,33 @@ public class CodeGenerator
         {
             if (varType == "float")
             {
-                if (!currentScope.ContainsKey(varName)) {currentScope.Add(varName, new VariableInfo { Type = varType, Value = result });}
+                if (!currentScope.ContainsKey(varName)) { currentScope.Add(varName, new VariableInfo { Type = varType, Value = result }); }
             }
             else
             {
-                if (!currentScope.ContainsKey(varName)) {currentScope.Add(varName, new VariableInfo { Type = varType, Value = (int)result });}
+                if (!currentScope.ContainsKey(varName)) { currentScope.Add(varName, new VariableInfo { Type = varType, Value = (int)result }); }
             }
         }
         // Ansonsten -> Aktualisierung des Werts im ScopeStack
         else
         {
-            if (varType == "float") {UpdateVariableInScopeStack(varName, result, varType, scopeStack);}
-            else {UpdateVariableInScopeStack(varName, (int)result, varType, scopeStack);}
+            if (varType == "float") { UpdateVariableInScopeStack(varName, result, varType, scopeStack); }
+            else { UpdateVariableInScopeStack(varName, (int)result, varType, scopeStack); }
         }
     }
 
-    private void HandleTwoRandomNumbersMultiplication (bool isVariableDeclaration, StringBuilder code, string indent, char varName, string varType, Dictionary<char, VariableInfo> currentScope, List<string> types, List<Dictionary<char, VariableInfo>> scopeStack)
+    private void HandleTwoRandomNumbersMultiplication(bool isVariableDeclaration, StringBuilder code, string indent, char varName, string varType, Dictionary<char, VariableInfo> currentScope, List<string> types, List<Dictionary<char, VariableInfo>> scopeStack)
     {
         float result, randomValue1, randomValue2;
 
         // Generierung von zwei Zufallszahlen
-        if (varType == "char"){
+        if (varType == "char")
+        {
             do
             {
                 randomValue1 = rand.Next(-10, 11);      // einfache Zahlen weil keine Mathe Aufgaben
                 randomValue2 = rand.Next(-10, 11);
-            } while ((randomValue1 * randomValue2) < 97 || (randomValue1 * randomValue2) > 122);
+            } while (randomValue1 * randomValue2 < 97 || randomValue1 * randomValue2 > 122);
         }
         else
         {
@@ -907,18 +914,18 @@ public class CodeGenerator
         {
             if (varType == "float")
             {
-                if (!currentScope.ContainsKey(varName)) {currentScope.Add(varName, new VariableInfo { Type = varType, Value = result });}
+                if (!currentScope.ContainsKey(varName)) { currentScope.Add(varName, new VariableInfo { Type = varType, Value = result }); }
             }
             else
             {
-                if (!currentScope.ContainsKey(varName)) {currentScope.Add(varName, new VariableInfo { Type = varType, Value = (int)result });}
+                if (!currentScope.ContainsKey(varName)) { currentScope.Add(varName, new VariableInfo { Type = varType, Value = (int)result }); }
             }
         }
         // Ansonsten -> Aktualisierung des Werts im ScopeStack
         else
         {
-            if (varType == "float") {UpdateVariableInScopeStack(varName, result, varType, scopeStack);}
-            else {UpdateVariableInScopeStack(varName, (int)result, varType, scopeStack);}
+            if (varType == "float") { UpdateVariableInScopeStack(varName, result, varType, scopeStack); }
+            else { UpdateVariableInScopeStack(varName, (int)result, varType, scopeStack); }
         }
     }
 
@@ -941,7 +948,7 @@ public class CodeGenerator
         // Generierung einer neuen Variable oder Auswahl einer vorhandenen Variable
         char varName;
         string varType;
-        
+
         if (isVariableDeclaration)
         {
             var localVar = GenerateRandomVariable(types, otherScopes, currentScope);
@@ -966,13 +973,13 @@ public class CodeGenerator
             float var1Value = var1.Value.Value;
 
             KeyValuePair<char, VariableInfo> var2;
-            do {var2 = combinedItemList[rand.Next(combinedItemList.Count)];} while (var1Name == var2.Key);
+            do { var2 = combinedItemList[rand.Next(combinedItemList.Count)]; } while (var1Name == var2.Key);
             char var2Name = var2.Key;
             string var2Type = var2.Value.Type;
             float var2Value = var2.Value.Value;
 
-            if (isAddition) {HandleTwoVariableAddition(isVariableDeclaration, code, indent, varName, varType, var1Value, var1Type, var1Name, var2Value, var2Type, var2Name, currentScope, types, scopeStack);}
-            else {HandleTwoVariableSubtraction(isVariableDeclaration, code, indent, varName, varType, var1Value, var1Type, var1Name, var2Value, var2Type, var2Name, currentScope, types, scopeStack);}
+            if (isAddition) { HandleTwoVariableAddition(isVariableDeclaration, code, indent, varName, varType, var1Value, var1Type, var1Name, var2Value, var2Type, var2Name, currentScope, types, scopeStack); }
+            else { HandleTwoVariableSubtraction(isVariableDeclaration, code, indent, varName, varType, var1Value, var1Type, var1Name, var2Value, var2Type, var2Name, currentScope, types, scopeStack); }
         }
         else if (combinedItemList.Count > secondThreshold) // Eine zufällige Variable
         {
@@ -981,34 +988,34 @@ public class CodeGenerator
             string var1Type = var1.Value.Type;
             float var1Value = var1.Value.Value;
 
-            if (isAddition) {HandleOneVariableAddition(isVariableDeclaration, code, indent, varName, varType, var1Value, var1Type, var1Name, currentScope, types, scopeStack);}
-            else {HandleOneVariableSubtraction(isVariableDeclaration, code, indent, varName, varType, var1Value, var1Type, var1Name, currentScope, types, scopeStack);}
+            if (isAddition) { HandleOneVariableAddition(isVariableDeclaration, code, indent, varName, varType, var1Value, var1Type, var1Name, currentScope, types, scopeStack); }
+            else { HandleOneVariableSubtraction(isVariableDeclaration, code, indent, varName, varType, var1Value, var1Type, var1Name, currentScope, types, scopeStack); }
         }
         else // Zwei zufällige Variablen
         {
-            if (isAddition) {HandleTwoRandomNumbersAddition(isVariableDeclaration, code, indent, varName, varType, currentScope, types, scopeStack);}
-            else {HandleTwoRandomNumbersSubtraction(isVariableDeclaration, code, indent, varName, varType, currentScope, types, scopeStack);}
+            if (isAddition) { HandleTwoRandomNumbersAddition(isVariableDeclaration, code, indent, varName, varType, currentScope, types, scopeStack); }
+            else { HandleTwoRandomNumbersSubtraction(isVariableDeclaration, code, indent, varName, varType, currentScope, types, scopeStack); }
         }
     }
 
     private void HandleTwoVariableSubtraction(bool isVariableDeclaration, StringBuilder code, string indent, char varName, string varType, float var1Value, string var1Type, char var1Name, float var2Value, string var2Type, char var2Name, Dictionary<char, VariableInfo> currentScope, List<string> types, List<Dictionary<char, VariableInfo>> scopeStack)
     {
         // Char Operation möglich, wenn var1 und var2 getauscht werden -> passiert verdammt selten
-        if (varType == "char" && var2Value - var1Value > 97 && var2Value - var1Value < 122) 
+        if (varType == "char" && var2Value - var1Value > 97 && var2Value - var1Value < 122)
         {
-            (var1Name, var1Value, var1Type, var2Name, var2Value, var2Type) = 
+            (var1Name, var1Value, var1Type, var2Name, var2Value, var2Type) =
             (var2Name, var2Value, var2Type, var1Name, var1Value, var1Type);
         }
 
         // Keine Char Operation mit var1 - var2 möglich
         if (varType == "char" && (var1Value - var2Value < 99 || var1Value - var2Value > 120))
         {
-            if (!CharValueOutOfRange(varType, var1Value)) 
+            if (!CharValueOutOfRange(varType, var1Value))
             {
-                HandleOneVariableSubtraction(isVariableDeclaration, code, indent, varName, varType, var1Value, var1Type, var1Name, currentScope,types, scopeStack);
+                HandleOneVariableSubtraction(isVariableDeclaration, code, indent, varName, varType, var1Value, var1Type, var1Name, currentScope, types, scopeStack);
                 return;
             }
-            else if (!CharValueOutOfRange(varType, var2Value)) 
+            else if (!CharValueOutOfRange(varType, var2Value))
             {
                 HandleOneVariableSubtraction(isVariableDeclaration, code, indent, varName, varType, var2Value, var2Type, var2Name, currentScope, types, scopeStack);
                 return;
@@ -1034,15 +1041,15 @@ public class CodeGenerator
         // Zufällige Entscheidung, ob Typecasting und/oder Increment/Decrement
         if (allowIncrementDecrement && rand.Next(2) == 0)
         {
-            shouldIncrementDecrement = true;                      
+            shouldIncrementDecrement = true;
             if (allowExplicitTypecasting && rand.Next(2) == 0)
             {
-                shouldTypecasting = true;                         
+                shouldTypecasting = true;
             }
         }
         else if (allowExplicitTypecasting && rand.Next(2) == 0)
         {
-            shouldTypecasting = true;                            
+            shouldTypecasting = true;
             if (allowIncrementDecrement && rand.Next(2) == 0)
             {
                 shouldIncrementDecrement = true;
@@ -1077,9 +1084,9 @@ public class CodeGenerator
         {
             if (shouldTypecasting && shouldIncrementDecrement)
             {
-                if (var1Type == "float"){ result = (int)var1Value - var2Value;}         // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value - var2Value;}
-                
+                if (var1Type == "float") { result = (int)var1Value - var2Value; }         // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value - var2Value; }
+
                 if (isVariableDeclaration)
                 {
                     code.Append($"{indent}{varType} {varName} = ({castType1}){position1} - {position2};\\r\\n");
@@ -1093,8 +1100,8 @@ public class CodeGenerator
             }
             else if (shouldTypecasting)
             {
-                if (var1Type == "float"){ result = (int)var1Value - var2Value;}         // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value - var2Value;}
+                if (var1Type == "float") { result = (int)var1Value - var2Value; }         // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value - var2Value; }
 
                 if (isVariableDeclaration)
                 {
@@ -1138,11 +1145,12 @@ public class CodeGenerator
                 }
             }
         }
-        else if(castPosition == 1){
+        else if (castPosition == 1)
+        {
             if (shouldTypecasting && shouldIncrementDecrement)
             {
-                if (var2Type == "float"){ result = var1Value - (int)var2Value;}         // Typecasting beachten -> var2Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value - var2Value;}
+                if (var2Type == "float") { result = var1Value - (int)var2Value; }         // Typecasting beachten -> var2Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value - var2Value; }
 
                 if (isVariableDeclaration)
                 {
@@ -1157,8 +1165,8 @@ public class CodeGenerator
             }
             else if (shouldTypecasting)
             {
-                if (var2Type == "float"){ result = var1Value - (int)var2Value;}         // Typecasting beachten -> var2Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value - var2Value;}
+                if (var2Type == "float") { result = var1Value - (int)var2Value; }         // Typecasting beachten -> var2Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value - var2Value; }
 
                 if (isVariableDeclaration)
                 {
@@ -1186,7 +1194,8 @@ public class CodeGenerator
                     if (debug && debugSubtraction) { Console.WriteLine($"* Subtraction with Increment/Decrement: {varName} = {position1} - {position2}"); }
                 }
             }
-            else {
+            else
+            {
                 result = var1Value - var2Value;
 
                 if (isVariableDeclaration)
@@ -1201,13 +1210,14 @@ public class CodeGenerator
                 }
             }
         }
-        else {
+        else
+        {
             if (shouldTypecasting && shouldIncrementDecrement)
             {
-                if (var1Type == "float" && var2Type == "float"){ result = (int)var1Value - (int)var2Value;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else if (var1Type == "float"){ result = (int)var1Value - var2Value;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else if (var2Type == "float"){ result = var1Value - (int)var2Value;} // Typecasting beachten -> var2Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value - var2Value;}
+                if (var1Type == "float" && var2Type == "float") { result = (int)var1Value - (int)var2Value; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else if (var1Type == "float") { result = (int)var1Value - var2Value; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else if (var2Type == "float") { result = var1Value - (int)var2Value; } // Typecasting beachten -> var2Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value - var2Value; }
 
                 if (isVariableDeclaration)
                 {
@@ -1222,11 +1232,11 @@ public class CodeGenerator
             }
             else if (shouldTypecasting)
             {
-                if (var1Type == "float" && var2Type == "float"){ result = (int)var1Value - (int)var2Value;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else if (var1Type == "float"){ result = (int)var1Value - var2Value;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else if (var2Type == "float"){ result = var1Value - (int)var2Value;} // Typecasting beachten -> var2Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value - var2Value;}
-                
+                if (var1Type == "float" && var2Type == "float") { result = (int)var1Value - (int)var2Value; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else if (var1Type == "float") { result = (int)var1Value - var2Value; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else if (var2Type == "float") { result = var1Value - (int)var2Value; } // Typecasting beachten -> var2Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value - var2Value; }
+
                 if (isVariableDeclaration)
                 {
                     code.Append($"{indent}{varType} {varName} = ({castType1}){var1Name} - ({castType2}){var2Name};\\r\\n");
@@ -1253,7 +1263,8 @@ public class CodeGenerator
                     if (debug && debugSubtraction) { Console.WriteLine($"* Subtraction with Increment/Decrement: {varName} = {position1} - {position2}"); }
                 }
             }
-            else {
+            else
+            {
                 result = var1Value - var2Value;
 
                 if (isVariableDeclaration)
@@ -1284,24 +1295,24 @@ public class CodeGenerator
         {
             if (varType == "float")
             {
-                if (!currentScope.ContainsKey(varName)) {currentScope.Add(varName, new VariableInfo { Type = varType, Value = result });}
+                if (!currentScope.ContainsKey(varName)) { currentScope.Add(varName, new VariableInfo { Type = varType, Value = result }); }
             }
             else
             {
-                if (!currentScope.ContainsKey(varName)) {currentScope.Add(varName, new VariableInfo { Type = varType, Value = (int)result });}
+                if (!currentScope.ContainsKey(varName)) { currentScope.Add(varName, new VariableInfo { Type = varType, Value = (int)result }); }
             }
         }
         // Sonst -> Aktualisierung der Variable im aktuellen Scope
         else
         {
-            if (varType == "float") {UpdateVariableInScopeStack(varName, result, varType, scopeStack);}
-            else {UpdateVariableInScopeStack(varName, (int)result, varType, scopeStack);}
+            if (varType == "float") { UpdateVariableInScopeStack(varName, result, varType, scopeStack); }
+            else { UpdateVariableInScopeStack(varName, (int)result, varType, scopeStack); }
         }
         // Wenn Inkrement/Dekrement -> Aktualisierung der anderen Variablen im ScopeStack
         if (shouldIncrementDecrement)
         {
-            if (varName != var1Name) {UpdateVariableInScopeStack(var1Name, var1Value, var1Type, scopeStack);}
-            if (varName != var2Name) {UpdateVariableInScopeStack(var2Name, var2Value, var2Type, scopeStack);}
+            if (varName != var1Name) { UpdateVariableInScopeStack(var1Name, var1Value, var1Type, scopeStack); }
+            if (varName != var2Name) { UpdateVariableInScopeStack(var2Name, var2Value, var2Type, scopeStack); }
         }
     }
 
@@ -1310,12 +1321,12 @@ public class CodeGenerator
         // Keine Char Operation mit var1 + var2 möglich
         if (varType == "char" && (var1Value + var2Value < 99 || var1Value + var2Value > 120))
         {
-            if (!CharValueOutOfRange(varType, var1Value)) 
+            if (!CharValueOutOfRange(varType, var1Value))
             {
                 HandleOneVariableAddition(isVariableDeclaration, code, indent, varName, varType, var1Value, var1Type, var1Name, currentScope, types, scopeStack);
                 return;
             }
-            else if (!CharValueOutOfRange(varType, var2Value)) 
+            else if (!CharValueOutOfRange(varType, var2Value))
             {
                 HandleOneVariableAddition(isVariableDeclaration, code, indent, varName, varType, var2Value, var2Type, var2Name, currentScope, types, scopeStack);
                 return;
@@ -1341,12 +1352,12 @@ public class CodeGenerator
         // Zufällige Entscheidung, ob Typecasting und/oder Increment/Decrement
         if (allowIncrementDecrement && rand.Next(2) == 0)
         {
-            shouldIncrementDecrement = true;                      
+            shouldIncrementDecrement = true;
             if (allowExplicitTypecasting && rand.Next(2) == 0) { shouldTypecasting = true; }
         }
         else if (allowExplicitTypecasting && rand.Next(2) == 0)
         {
-            shouldTypecasting = true;                            
+            shouldTypecasting = true;
             if (allowIncrementDecrement && rand.Next(2) == 0) { shouldIncrementDecrement = true; }
         }
 
@@ -1374,9 +1385,9 @@ public class CodeGenerator
         {
             if (shouldTypecasting && shouldIncrementDecrement)
             {
-                if (var1Type == "float"){ result = (int)var1Value + var2Value;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value + var2Value;}
-                
+                if (var1Type == "float") { result = (int)var1Value + var2Value; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value + var2Value; }
+
                 if (isVariableDeclaration)
                 {
                     code.Append($"{indent}{varType} {varName} = ({castType1}){position1} + {position2};\\r\\n");
@@ -1390,8 +1401,8 @@ public class CodeGenerator
             }
             else if (shouldTypecasting)
             {
-                if (var1Type == "float"){ result = (int)var1Value + var2Value;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value + var2Value;}
+                if (var1Type == "float") { result = (int)var1Value + var2Value; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value + var2Value; }
 
                 if (isVariableDeclaration)
                 {
@@ -1435,11 +1446,12 @@ public class CodeGenerator
                 }
             }
         }
-        else if(castPosition == 1){
+        else if (castPosition == 1)
+        {
             if (shouldTypecasting && shouldIncrementDecrement)
             {
-                if (var2Type == "float"){ result = var1Value + (int)var2Value;}         // Typecasting beachten -> var2Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value + var2Value;}
+                if (var2Type == "float") { result = var1Value + (int)var2Value; }         // Typecasting beachten -> var2Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value + var2Value; }
 
                 if (isVariableDeclaration)
                 {
@@ -1454,8 +1466,8 @@ public class CodeGenerator
             }
             else if (shouldTypecasting)
             {
-                if (var2Type == "float"){ result = var1Value + (int)var2Value;}         // Typecasting beachten -> var2Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value + var2Value;}
+                if (var2Type == "float") { result = var1Value + (int)var2Value; }         // Typecasting beachten -> var2Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value + var2Value; }
 
                 if (isVariableDeclaration)
                 {
@@ -1483,7 +1495,8 @@ public class CodeGenerator
                     if (debug && debugAddition) { Console.WriteLine($"* Addition with Increment/Decrement: {varName} = {position1} + {position2}"); }
                 }
             }
-            else {
+            else
+            {
                 result = var1Value + var2Value;
 
                 if (isVariableDeclaration)
@@ -1498,13 +1511,14 @@ public class CodeGenerator
                 }
             }
         }
-        else {
+        else
+        {
             if (shouldTypecasting && shouldIncrementDecrement)
             {
-                if (var1Type == "float" && var2Type == "float"){ result = (int)var1Value + (int)var2Value;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else if (var1Type == "float"){ result = (int)var1Value + var2Value;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else if (var2Type == "float"){ result = var1Value + (int)var2Value;} // Typecasting beachten -> var2Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value + var2Value;}
+                if (var1Type == "float" && var2Type == "float") { result = (int)var1Value + (int)var2Value; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else if (var1Type == "float") { result = (int)var1Value + var2Value; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else if (var2Type == "float") { result = var1Value + (int)var2Value; } // Typecasting beachten -> var2Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value + var2Value; }
 
                 if (isVariableDeclaration)
                 {
@@ -1519,11 +1533,11 @@ public class CodeGenerator
             }
             else if (shouldTypecasting)
             {
-                if (var1Type == "float" && var2Type == "float"){ result = (int)var1Value + (int)var2Value;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else if (var1Type == "float"){ result = (int)var1Value + var2Value;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else if (var2Type == "float"){ result = var1Value + (int)var2Value;} // Typecasting beachten -> var2Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value + var2Value;}
-                
+                if (var1Type == "float" && var2Type == "float") { result = (int)var1Value + (int)var2Value; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else if (var1Type == "float") { result = (int)var1Value + var2Value; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else if (var2Type == "float") { result = var1Value + (int)var2Value; } // Typecasting beachten -> var2Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value + var2Value; }
+
                 if (isVariableDeclaration)
                 {
                     code.Append($"{indent}{varType} {varName} = ({castType1}){var1Name} + ({castType2}){var2Name};\\r\\n");
@@ -1582,32 +1596,32 @@ public class CodeGenerator
         {
             if (varType == "float")
             {
-                if (!currentScope.ContainsKey(varName)) {currentScope.Add(varName, new VariableInfo { Type = varType, Value = result });}
+                if (!currentScope.ContainsKey(varName)) { currentScope.Add(varName, new VariableInfo { Type = varType, Value = result }); }
             }
             else
             {
-                if (!currentScope.ContainsKey(varName)) {currentScope.Add(varName, new VariableInfo { Type = varType, Value = (int)result });}
+                if (!currentScope.ContainsKey(varName)) { currentScope.Add(varName, new VariableInfo { Type = varType, Value = (int)result }); }
             }
         }
         // Sonst -> Aktualisierung des Wertes im ScopeStack
         else
         {
-            if (varType == "float") {UpdateVariableInScopeStack(varName, result, varType, scopeStack);}
-            else {UpdateVariableInScopeStack(varName, (int)result, varType, scopeStack);}
+            if (varType == "float") { UpdateVariableInScopeStack(varName, result, varType, scopeStack); }
+            else { UpdateVariableInScopeStack(varName, (int)result, varType, scopeStack); }
         }
 
         // Inkrement/Dekrement -> Aktualisierung der Werte im ScopeStack
         if (shouldIncrementDecrement)
         {
-            if (varName != var1Name) {UpdateVariableInScopeStack(var1Name, var1Value, var1Type, scopeStack);}
-            if (varName != var2Name) {UpdateVariableInScopeStack(var2Name, var2Value, var2Type, scopeStack);}
+            if (varName != var1Name) { UpdateVariableInScopeStack(var1Name, var1Value, var1Type, scopeStack); }
+            if (varName != var2Name) { UpdateVariableInScopeStack(var2Name, var2Value, var2Type, scopeStack); }
         }
     }
 
     private void HandleOneVariableSubtraction(bool isVariableDeclaration, StringBuilder code, string indent, char varName, string varType, float var1Value, string var1Type, char var1Name, Dictionary<char, VariableInfo> currentScope, List<string> types, List<Dictionary<char, VariableInfo>> scopeStack)
     {
         // Keine Char Operation mit var1 - randomValue oder randomValue - var1 möglich
-        if (CharValueOutOfRange(varType, var1Value)) 
+        if (CharValueOutOfRange(varType, var1Value))
         {
             HandleTwoRandomNumbersSubtraction(isVariableDeclaration, code, indent, varName, varType, currentScope, types, scopeStack);
             return;
@@ -1624,15 +1638,15 @@ public class CodeGenerator
         // Zufällige Entscheidung, ob Typecasting und/oder Increment/Decrement
         if (allowIncrementDecrement && rand.Next(2) == 0)
         {
-            shouldIncrementDecrement = true;                      
+            shouldIncrementDecrement = true;
             if (allowExplicitTypecasting && rand.Next(2) == 0)
             {
-                shouldTypecasting = true;                         
+                shouldTypecasting = true;
             }
         }
         else if (allowExplicitTypecasting && rand.Next(2) == 0)
         {
-            shouldTypecasting = true;                            
+            shouldTypecasting = true;
             if (allowIncrementDecrement && rand.Next(2) == 0)
             {
                 shouldIncrementDecrement = true;
@@ -1644,7 +1658,7 @@ public class CodeGenerator
         {
             do
             {
-                castType = types[rand.Next(types.Count)];     
+                castType = types[rand.Next(types.Count)];
             } while (castType == var1Type);
         }
 
@@ -1653,22 +1667,22 @@ public class CodeGenerator
         {
             do
             {
-                if (rand.Next(2) == 0) {randomValue1 = GenerateRandomValue("float");} 
-                else {randomValue1 = GenerateRandomValue("int");}
+                if (rand.Next(2) == 0) { randomValue1 = GenerateRandomValue("float"); }
+                else { randomValue1 = GenerateRandomValue("int"); }
             } while (var1Value - randomValue1 < 98 || var1Value - randomValue1 > 121);
         }
         else if (varType == "char" && castPosition == 1)
         {
             do
             {
-                if (rand.Next(2) == 0) {randomValue1 = (float)(rand.NextDouble() * 1000.0 - 500.0); randomValue1 = (float)Math.Round(randomValue1, 2);} 
-                else {randomValue1 = rand.Next(-500, 501);}
+                if (rand.Next(2) == 0) { randomValue1 = (float)(rand.NextDouble() * 1000.0 - 500.0); randomValue1 = (float)Math.Round(randomValue1, 2); }
+                else { randomValue1 = rand.Next(-500, 501); }
             } while (randomValue1 - var1Value < 98 || randomValue1 - var1Value > 121);
         }
         else
         {
-            if (rand.Next(2) == 0) {randomValue1 = GenerateRandomValue("float");} 
-            else {randomValue1 = GenerateRandomValue("int");}
+            if (rand.Next(2) == 0) { randomValue1 = GenerateRandomValue("float"); }
+            else { randomValue1 = GenerateRandomValue("int"); }
         }
 
         // Wenn Inkrement/Dekrement -> Berechnung des Ergebnisses und Generierung des Codes
@@ -1683,8 +1697,8 @@ public class CodeGenerator
         {
             if (shouldTypecasting && shouldIncrementDecrement)
             {
-                if (var1Type == "float"){ result = (int)var1Value - randomValue1;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value - randomValue1;}
+                if (var1Type == "float") { result = (int)var1Value - randomValue1; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value - randomValue1; }
 
                 if (isVariableDeclaration)
                 {
@@ -1699,8 +1713,8 @@ public class CodeGenerator
             }
             else if (shouldTypecasting)
             {
-                if (var1Type == "float"){ result = (int)var1Value - randomValue1;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value - randomValue1;}
+                if (var1Type == "float") { result = (int)var1Value - randomValue1; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value - randomValue1; }
 
                 if (isVariableDeclaration)
                 {
@@ -1748,8 +1762,8 @@ public class CodeGenerator
         {
             if (shouldTypecasting && shouldIncrementDecrement)
             {
-                if (var1Type == "float"){ result = randomValue1 - (int)var1Value;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = randomValue1 - var1Value;}
+                if (var1Type == "float") { result = randomValue1 - (int)var1Value; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = randomValue1 - var1Value; }
 
                 if (isVariableDeclaration)
                 {
@@ -1764,8 +1778,8 @@ public class CodeGenerator
             }
             else if (shouldTypecasting)
             {
-                if (var1Type == "float"){ result = randomValue1 - (int)var1Value;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = randomValue1 - var1Value;}
+                if (var1Type == "float") { result = randomValue1 - (int)var1Value; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = randomValue1 - var1Value; }
 
                 if (isVariableDeclaration)
                 {
@@ -1805,7 +1819,7 @@ public class CodeGenerator
                 else
                 {
                     code.Append($"{indent}{varName} = {randomValue1} - {var1Name};\\r\\n");
-                    if (debug && debugSubtraction) { Console.WriteLine($"* Subtraction: {varName} = {randomValue1} - {var1Name}"); }                
+                    if (debug && debugSubtraction) { Console.WriteLine($"* Subtraction: {varName} = {randomValue1} - {var1Name}"); }
                 }
             }
         }
@@ -1823,27 +1837,27 @@ public class CodeGenerator
         {
             if (varType == "float")
             {
-                if (!currentScope.ContainsKey(varName)) {currentScope.Add(varName, new VariableInfo { Type = varType, Value = result });}
+                if (!currentScope.ContainsKey(varName)) { currentScope.Add(varName, new VariableInfo { Type = varType, Value = result }); }
             }
             else
             {
-                if (!currentScope.ContainsKey(varName)) {currentScope.Add(varName, new VariableInfo { Type = varType, Value = (int)result });}
+                if (!currentScope.ContainsKey(varName)) { currentScope.Add(varName, new VariableInfo { Type = varType, Value = (int)result }); }
             }
         }
         // Sonst -> Aktualisierung des Wertes im ScopeStack
         else
         {
-            if (varType == "float") {UpdateVariableInScopeStack(varName, result, varType, scopeStack);}
-            else {UpdateVariableInScopeStack(varName, (int)result, varType, scopeStack);}
+            if (varType == "float") { UpdateVariableInScopeStack(varName, result, varType, scopeStack); }
+            else { UpdateVariableInScopeStack(varName, (int)result, varType, scopeStack); }
         }
         // Inkrement/Dekrement -> Aktualisierung der Werte im ScopeStack
-        if (shouldIncrementDecrement && varName != var1Name){UpdateVariableInScopeStack(var1Name, var1Value, var1Type, scopeStack);}                     
+        if (shouldIncrementDecrement && varName != var1Name) { UpdateVariableInScopeStack(var1Name, var1Value, var1Type, scopeStack); }
     }
 
     private void HandleOneVariableAddition(bool isVariableDeclaration, StringBuilder code, string indent, char varName, string varType, float var1Value, string var1Type, char var1Name, Dictionary<char, VariableInfo> currentScope, List<string> types, List<Dictionary<char, VariableInfo>> scopeStack)
     {
         // Keine Char Operation mit var1 + randomValue möglich
-        if (CharValueOutOfRange(varType, var1Value)) 
+        if (CharValueOutOfRange(varType, var1Value))
         {
             HandleTwoRandomNumbersAddition(isVariableDeclaration, code, indent, varName, varType, currentScope, types, scopeStack);
             return;
@@ -1860,15 +1874,15 @@ public class CodeGenerator
         // Zufällige Entscheidung, ob Typecasting und/oder Increment/Decrement
         if (allowIncrementDecrement && rand.Next(2) == 0)
         {
-            shouldIncrementDecrement = true;                      
+            shouldIncrementDecrement = true;
             if (allowExplicitTypecasting && rand.Next(2) == 0)
             {
-                shouldTypecasting = true;                         
+                shouldTypecasting = true;
             }
         }
         else if (allowExplicitTypecasting && rand.Next(2) == 0)
         {
-            shouldTypecasting = true;                            
+            shouldTypecasting = true;
             if (allowIncrementDecrement && rand.Next(2) == 0)
             {
                 shouldIncrementDecrement = true;
@@ -1880,7 +1894,7 @@ public class CodeGenerator
         {
             do
             {
-                castType = types[rand.Next(types.Count)];     
+                castType = types[rand.Next(types.Count)];
             } while (castType == var1Type);
         }
 
@@ -1889,14 +1903,14 @@ public class CodeGenerator
         {
             do
             {
-                if (rand.Next(2) == 0) {randomValue1 = GenerateRandomValue("float");} 
-                else {randomValue1 = GenerateRandomValue("int");}
+                if (rand.Next(2) == 0) { randomValue1 = GenerateRandomValue("float"); }
+                else { randomValue1 = GenerateRandomValue("int"); }
             } while (var1Value + randomValue1 < 98 || var1Value + randomValue1 > 121);
         }
         else
         {
-            if (rand.Next(2) == 0) {randomValue1 = GenerateRandomValue("float");} 
-            else {randomValue1 = GenerateRandomValue("int");}
+            if (rand.Next(2) == 0) { randomValue1 = GenerateRandomValue("float"); }
+            else { randomValue1 = GenerateRandomValue("int"); }
         }
 
         // Wenn Inkrement/Dekrement -> Berechnung des Ergebnisses und Generierung des Codes
@@ -1907,11 +1921,12 @@ public class CodeGenerator
         }
 
         // Berechnung des Ergebnisses und Generierung des Codes
-        if (castPosition == 0){
+        if (castPosition == 0)
+        {
             if (shouldTypecasting && shouldIncrementDecrement)
             {
-                if (var1Type == "float"){ result = (int)var1Value + randomValue1;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value + randomValue1;}
+                if (var1Type == "float") { result = (int)var1Value + randomValue1; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value + randomValue1; }
 
                 if (isVariableDeclaration)
                 {
@@ -1926,8 +1941,8 @@ public class CodeGenerator
             }
             else if (shouldTypecasting)
             {
-                if (var1Type == "float"){ result = (int)var1Value + randomValue1;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value + randomValue1;}
+                if (var1Type == "float") { result = (int)var1Value + randomValue1; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value + randomValue1; }
 
                 if (isVariableDeclaration)
                 {
@@ -1971,11 +1986,12 @@ public class CodeGenerator
                 }
             }
         }
-        else {
+        else
+        {
             if (shouldTypecasting && shouldIncrementDecrement)
             {
-                if (var1Type == "float"){ result = (int)var1Value + randomValue1;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value + randomValue1;}
+                if (var1Type == "float") { result = (int)var1Value + randomValue1; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value + randomValue1; }
 
                 if (isVariableDeclaration)
                 {
@@ -1990,8 +2006,8 @@ public class CodeGenerator
             }
             else if (shouldTypecasting)
             {
-                if (var1Type == "float"){ result = (int)var1Value + randomValue1;} // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
-                else {result = var1Value + randomValue1;}
+                if (var1Type == "float") { result = (int)var1Value + randomValue1; } // Typecasting beachten -> var1Type != castType -> float nach ... -> Nachkommastellen gehen verloren
+                else { result = var1Value + randomValue1; }
 
                 if (isVariableDeclaration)
                 {
@@ -2031,7 +2047,7 @@ public class CodeGenerator
                 else
                 {
                     code.Append($"{indent}{varName} = {randomValue1} + {var1Name};\\r\\n");
-                    if (debug && debugAddition) { Console.WriteLine($"* Addition: {varName} = {randomValue1} + {var1Name}"); }                
+                    if (debug && debugAddition) { Console.WriteLine($"* Addition: {varName} = {randomValue1} + {var1Name}"); }
                 }
             }
         }
@@ -2049,41 +2065,42 @@ public class CodeGenerator
         {
             if (varType == "float")
             {
-                if (!currentScope.ContainsKey(varName)) {currentScope.Add(varName, new VariableInfo { Type = varType, Value = result });}
+                if (!currentScope.ContainsKey(varName)) { currentScope.Add(varName, new VariableInfo { Type = varType, Value = result }); }
             }
             else
             {
-                if (!currentScope.ContainsKey(varName)) {currentScope.Add(varName, new VariableInfo { Type = varType, Value = (int)result });}
+                if (!currentScope.ContainsKey(varName)) { currentScope.Add(varName, new VariableInfo { Type = varType, Value = (int)result }); }
             }
         }
         // Sonst -> Aktualisierung des Wertes im ScopeStack
         else
         {
-            if (varType == "float") {UpdateVariableInScopeStack(varName, result, varType, scopeStack);}
-            else {UpdateVariableInScopeStack(varName, (int)result, varType, scopeStack);}
+            if (varType == "float") { UpdateVariableInScopeStack(varName, result, varType, scopeStack); }
+            else { UpdateVariableInScopeStack(varName, (int)result, varType, scopeStack); }
         }
         // Inkrement/Dekrement -> Aktualisierung der Werte im ScopeStack
-        if (shouldIncrementDecrement && varName != var1Name){UpdateVariableInScopeStack(var1Name, var1Value, var1Type, scopeStack);}                     
+        if (shouldIncrementDecrement && varName != var1Name) { UpdateVariableInScopeStack(var1Name, var1Value, var1Type, scopeStack); }
     }
 
-    private void HandleTwoRandomNumbersSubtraction (bool isVariableDeclaration, StringBuilder code, string indent, char varName, string varType, Dictionary<char, VariableInfo> currentScope, List<string> types, List<Dictionary<char, VariableInfo>> scopeStack)
+    private void HandleTwoRandomNumbersSubtraction(bool isVariableDeclaration, StringBuilder code, string indent, char varName, string varType, Dictionary<char, VariableInfo> currentScope, List<string> types, List<Dictionary<char, VariableInfo>> scopeStack)
     {
         float result, randomValue1, randomValue2;
 
         // Generierung von zwei Zufallszahlen
-        if (varType == "char"){
+        if (varType == "char")
+        {
             do
             {
-                if (rand.Next(3) == 0) {randomValue1 = GenerateRandomValue("float"); randomValue2 = GenerateRandomValue("int");}
-                else if (rand.Next(3) == 1) {randomValue1 = GenerateRandomValue("int"); randomValue2 = GenerateRandomValue("float");} 
-                else {randomValue1 = GenerateRandomValue("int"); randomValue2 = GenerateRandomValue("int");}
-            } while ((randomValue1 - randomValue2) < 97 || (randomValue1 - randomValue2) > 122);
+                if (rand.Next(3) == 0) { randomValue1 = GenerateRandomValue("float"); randomValue2 = GenerateRandomValue("int"); }
+                else if (rand.Next(3) == 1) { randomValue1 = GenerateRandomValue("int"); randomValue2 = GenerateRandomValue("float"); }
+                else { randomValue1 = GenerateRandomValue("int"); randomValue2 = GenerateRandomValue("int"); }
+            } while (randomValue1 - randomValue2 < 97 || randomValue1 - randomValue2 > 122);
         }
         else
         {
-            if (rand.Next(3) == 0) {randomValue1 = GenerateRandomValue("float"); randomValue2 = GenerateRandomValue("int");}
-            else if (rand.Next(3) == 1) {randomValue1 = GenerateRandomValue("int"); randomValue2 = GenerateRandomValue("float");} 
-            else {randomValue1 = GenerateRandomValue("int"); randomValue2 = GenerateRandomValue("int");}
+            if (rand.Next(3) == 0) { randomValue1 = GenerateRandomValue("float"); randomValue2 = GenerateRandomValue("int"); }
+            else if (rand.Next(3) == 1) { randomValue1 = GenerateRandomValue("int"); randomValue2 = GenerateRandomValue("float"); }
+            else { randomValue1 = GenerateRandomValue("int"); randomValue2 = GenerateRandomValue("int"); }
         }
 
         // Berechnung des Ergebnisses
@@ -2108,38 +2125,39 @@ public class CodeGenerator
         {
             if (varType == "float")
             {
-                if (!currentScope.ContainsKey(varName)) {currentScope.Add(varName, new VariableInfo { Type = varType, Value = result });}
+                if (!currentScope.ContainsKey(varName)) { currentScope.Add(varName, new VariableInfo { Type = varType, Value = result }); }
             }
             else
             {
-                if (!currentScope.ContainsKey(varName)) {currentScope.Add(varName, new VariableInfo { Type = varType, Value = (int)result });}
+                if (!currentScope.ContainsKey(varName)) { currentScope.Add(varName, new VariableInfo { Type = varType, Value = (int)result }); }
             }
         }
         else
         {
-            if (varType == "float") {UpdateVariableInScopeStack(varName, result, varType, scopeStack);}
-            else {UpdateVariableInScopeStack(varName, (int)result, varType, scopeStack);}
+            if (varType == "float") { UpdateVariableInScopeStack(varName, result, varType, scopeStack); }
+            else { UpdateVariableInScopeStack(varName, (int)result, varType, scopeStack); }
         }
     }
-    
-    private void HandleTwoRandomNumbersAddition (bool isVariableDeclaration, StringBuilder code, string indent, char varName, string varType, Dictionary<char, VariableInfo> currentScope, List<string> types, List<Dictionary<char, VariableInfo>> scopeStack)
+
+    private void HandleTwoRandomNumbersAddition(bool isVariableDeclaration, StringBuilder code, string indent, char varName, string varType, Dictionary<char, VariableInfo> currentScope, List<string> types, List<Dictionary<char, VariableInfo>> scopeStack)
     {
         float result, randomValue1, randomValue2;
 
         // Generierung von zwei Zufallszahlen
-        if (varType == "char"){
+        if (varType == "char")
+        {
             do
             {
-                if (rand.Next(3) == 0) {randomValue1 = GenerateRandomValue("float"); randomValue2 = GenerateRandomValue("int");}
-                else if (rand.Next(3) == 1) {randomValue1 = GenerateRandomValue("int"); randomValue2 = GenerateRandomValue("float");} 
-                else {randomValue1 = GenerateRandomValue("int"); randomValue2 = GenerateRandomValue("int");}
-            } while ((randomValue1 + randomValue2) < 97 || (randomValue1 + randomValue2) > 122);
+                if (rand.Next(3) == 0) { randomValue1 = GenerateRandomValue("float"); randomValue2 = GenerateRandomValue("int"); }
+                else if (rand.Next(3) == 1) { randomValue1 = GenerateRandomValue("int"); randomValue2 = GenerateRandomValue("float"); }
+                else { randomValue1 = GenerateRandomValue("int"); randomValue2 = GenerateRandomValue("int"); }
+            } while (randomValue1 + randomValue2 < 97 || randomValue1 + randomValue2 > 122);
         }
         else
         {
-            if (rand.Next(3) == 0) {randomValue1 = GenerateRandomValue("float"); randomValue2 = GenerateRandomValue("int");}
-            else if (rand.Next(3) == 1) {randomValue1 = GenerateRandomValue("int"); randomValue2 = GenerateRandomValue("float");} 
-            else {randomValue1 = GenerateRandomValue("int"); randomValue2 = GenerateRandomValue("int");}
+            if (rand.Next(3) == 0) { randomValue1 = GenerateRandomValue("float"); randomValue2 = GenerateRandomValue("int"); }
+            else if (rand.Next(3) == 1) { randomValue1 = GenerateRandomValue("int"); randomValue2 = GenerateRandomValue("float"); }
+            else { randomValue1 = GenerateRandomValue("int"); randomValue2 = GenerateRandomValue("int"); }
         }
 
         // Berechnung des Ergebnisses
@@ -2164,18 +2182,18 @@ public class CodeGenerator
         {
             if (varType == "float")
             {
-                if (!currentScope.ContainsKey(varName)) {currentScope.Add(varName, new VariableInfo { Type = varType, Value = result });}
+                if (!currentScope.ContainsKey(varName)) { currentScope.Add(varName, new VariableInfo { Type = varType, Value = result }); }
             }
             else
             {
-                if (!currentScope.ContainsKey(varName)) {currentScope.Add(varName, new VariableInfo { Type = varType, Value = (int)result });}
+                if (!currentScope.ContainsKey(varName)) { currentScope.Add(varName, new VariableInfo { Type = varType, Value = (int)result }); }
             }
         }
         // Sonst -> Aktualisierung des Wertes im ScopeStack
         else
         {
-            if (varType == "float") {UpdateVariableInScopeStack(varName, result, varType, scopeStack);}
-            else {UpdateVariableInScopeStack(varName, (int)result, varType, scopeStack);}
+            if (varType == "float") { UpdateVariableInScopeStack(varName, result, varType, scopeStack); }
+            else { UpdateVariableInScopeStack(varName, (int)result, varType, scopeStack); }
         }
     }
 
@@ -2217,7 +2235,7 @@ public class CodeGenerator
     private void HandleNewVariable(StringBuilder code, string indent, Dictionary<char, VariableInfo> otherScopes, Dictionary<char, VariableInfo> currentScope, List<string> type, List<Dictionary<char, VariableInfo>> scopeStack)
     {
         bool isVariableDeclaration = true;
-        
+
         bool[] operations = new bool[] {
             allowVariableDeclaration,
             allowAddition,
@@ -2235,7 +2253,7 @@ public class CodeGenerator
         int actionIndex = rand.Next(possibleOperations.Count);
         int action = possibleOperations[actionIndex];
 
-        if (action == 0) 
+        if (action == 0)
         {
             var localVar = GenerateRandomVariable(types, otherScopes, currentScope);
             string varType = localVar.Item1;
@@ -2297,7 +2315,8 @@ public class CodeGenerator
         UpdateVariableInScopeStack(varName, value, varType, scopeStack);
     }
 
-    private void UpdateVariableInScopeStack(char varName, float value, string varType, List<Dictionary<char, VariableInfo>> scopeStack){
+    private void UpdateVariableInScopeStack(char varName, float value, string varType, List<Dictionary<char, VariableInfo>> scopeStack)
+    {
         // Aktualisiere den Wert der Variable im ScopeStack
         for (int i = scopeStack.Count - 1; i >= 0; i--)     // Wichtige Logik:
         {                                                   // Wenn Variable in currentScope -> currentScope = tiefste Ebene
@@ -2316,7 +2335,8 @@ public class CodeGenerator
         string type = types[rand.Next(types.Count)];
         float value = GenerateRandomValue(type);
 
-        do {
+        do
+        {
             varName = (char)('a' + rand.Next(0, 26));
         } while (currentScope.ContainsKey(varName) || otherScopes.ContainsKey(varName));
 

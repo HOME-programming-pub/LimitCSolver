@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LimitCInterpreter.Tests", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_Modul_LimitCProtokollInput", "_Modul_LimitCProtokollInput\_Modul_LimitCProtokollInput.csproj", "{2DA89333-3BBB-461F-9608-528104D6E347}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_Modul_CreateLimitC", "_Modul_CreateLimitC\_Modul_CreateLimitC.csproj", "{27871B90-4E23-428C-A1E6-95F4354515DB}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A7143092-6731-42A8-8C3F-4E5B3B279F83}"
 	ProjectSection(SolutionItems) = preProject
 		Directory.Build.targets = Directory.Build.targets
@@ -17,6 +15,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LimitCInterpreter", "LimitCInterpreter\LimitCInterpreter.csproj", "{AE396100-96A7-422B-8B1A-9C69D94C8956}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MainApplication", "MainApplication\MainApplication.csproj", "{59E4C33A-2228-457E-815B-BBDB751161E1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LimitCGenerator", "LimitCGenerator\LimitCGenerator.csproj", "{B333CCCC-3266-4057-A006-103D9268AFBA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,10 +32,6 @@ Global
 		{2DA89333-3BBB-461F-9608-528104D6E347}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2DA89333-3BBB-461F-9608-528104D6E347}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2DA89333-3BBB-461F-9608-528104D6E347}.Release|Any CPU.Build.0 = Release|Any CPU
-		{27871B90-4E23-428C-A1E6-95F4354515DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{27871B90-4E23-428C-A1E6-95F4354515DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{27871B90-4E23-428C-A1E6-95F4354515DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{27871B90-4E23-428C-A1E6-95F4354515DB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AE396100-96A7-422B-8B1A-9C69D94C8956}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AE396100-96A7-422B-8B1A-9C69D94C8956}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE396100-96A7-422B-8B1A-9C69D94C8956}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -44,6 +40,10 @@ Global
 		{59E4C33A-2228-457E-815B-BBDB751161E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59E4C33A-2228-457E-815B-BBDB751161E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59E4C33A-2228-457E-815B-BBDB751161E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B333CCCC-3266-4057-A006-103D9268AFBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B333CCCC-3266-4057-A006-103D9268AFBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B333CCCC-3266-4057-A006-103D9268AFBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B333CCCC-3266-4057-A006-103D9268AFBA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

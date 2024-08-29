@@ -16,7 +16,6 @@ using System.Windows.Shapes;
 using System.IO;
 using ViewModel;
 using System.Reflection;
-using CreateLimitC;
 using CommunityToolkit.Mvvm.ComponentModel;
 using LimitCSolver.MainApplication.ViewModel;
 
