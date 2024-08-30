@@ -3,14 +3,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace LimitCSolver.MainApplication.ViewModel;
 
-public partial class ProtokolViewModel : ObservableObject
+public partial class ProtocolViewModel : ObservableObject
 {
-    public ProtokolViewModel()
+    public ProtocolViewModel()
     {
         Entrys.CollectionChanged += (sender, args) => OnPropertyChanged(nameof(MaxVarCount));
     }
 
-    private ObservableCollection<ProtokolEntryViewModel> _entrys = new();
+    private ObservableCollection<ProtocolEntryViewModel> _entrys = new();
     private decimal? _points = null;
 
     [ObservableProperty]
@@ -18,7 +18,7 @@ public partial class ProtokolViewModel : ObservableObject
     [ObservableProperty]
     private string _protocolOrLabelMismatchMessage = String.Empty;
 
-    public ObservableCollection<ProtokolEntryViewModel> Entrys
+    public ObservableCollection<ProtocolEntryViewModel> Entrys
     {
         get => _entrys;
         set => SetProperty(ref _entrys, value);

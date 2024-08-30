@@ -62,7 +62,7 @@
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type viewModels1:ProtokolEntryViewModel}">
+                    <DataTemplate DataType="{x:Type viewModels1:ProtocolEntryViewModel}">
                         <Grid Margin="5 10">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="25" />

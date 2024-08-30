@@ -20,7 +20,7 @@ namespace LimitCSolver.MainApplication.ViewModel;
 public partial class MainWindowViewModel : ObservableObject
 {
     #region Properties
-    private SolveTask _currentConfig = new("", "", false, new ProtokolViewModel());
+    private SolveTask _currentConfig = new("", "", false, new ProtocolViewModel());
     public SolveTask CurrentConfig
     {
         get => _currentConfig;
@@ -46,10 +46,10 @@ public partial class MainWindowViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CheckGivenProtokolActionCommand))]
-    private ProtokolViewModel? _givenProtokol;
+    private ProtocolViewModel? _givenProtokol;
 
     [ObservableProperty]
-    private ProtokolViewModel? _calcedSolution;
+    private ProtocolViewModel? _calcedSolution;
 
     [ObservableProperty]
     private Visibility _solutionVisibility = Visibility.Hidden;
@@ -323,7 +323,7 @@ public partial class MainWindowViewModel : ObservableObject
         {
             return;
         }
-        CalcedSolution = new ProtokolViewModel();
+        CalcedSolution = new ProtocolViewModel();
         var program = parse(CurrentConfig.Code);
         var interpreter = new LimitCInterpreter.LimitCInterpreter();
 
@@ -365,11 +365,11 @@ public partial class MainWindowViewModel : ObservableObject
     public void LoadProtocolFromFile(string path)
     {
         var fileContents = File.ReadAllText(path);
-        ProtokolViewModel newprot = new ProtokolViewModel();
+        ProtocolViewModel newprot = new ProtocolViewModel();
 
         try
         {
-            newprot = JsonConvert.DeserializeObject<ProtokolViewModel>(fileContents) ?? new ProtokolViewModel();
+            newprot = JsonConvert.DeserializeObject<ProtocolViewModel>(fileContents) ?? new ProtocolViewModel();
         }
         catch (Exception e)
         {
@@ -378,7 +378,7 @@ public partial class MainWindowViewModel : ObservableObject
             var t = JsonConvert.DeserializeObject<List<ExtProtokolEntryViewModel>>(fileContents) ?? new List<ExtProtokolEntryViewModel>();
             foreach (var model in t)
             {
-                newprot.Entrys.Add(new ProtokolEntryViewModel(model.Label, model.Vars));
+                newprot.Entrys.Add(new ProtocolEntryViewModel(model.Label, model.Vars));
             }
         }
 
@@ -394,7 +394,7 @@ public partial class MainWindowViewModel : ObservableObject
         if (newconfig != null)
         {
             CurrentConfig = newconfig;
-            CalcedSolution = new ProtokolViewModel();
+            CalcedSolution = new ProtocolViewModel();
             CalculateSolution();
         }
     }
@@ -409,15 +409,15 @@ public partial class MainWindowViewModel : ObservableObject
         serializer.Serialize(file, newTask);
     }
 
-    private ProtokolViewModel ExtractEmptyProtocolFromProgram(string code)
+    private ProtocolViewModel ExtractEmptyProtocolFromProgram(string code)
     {
-        var newProtocol = new ProtokolViewModel();
+        var newProtocol = new ProtocolViewModel();
         var interpreter = new LimitCInterpreter.LimitCInterpreter();
         var program = parse(CurrentConfig.Code);
 
         interpreter.LabelCheckPointReached += (sender, args) =>
         {
-            var npe = new ProtokolEntryViewModel() { Num = args.LabelNum };
+            var npe = new ProtocolEntryViewModel() { Num = args.LabelNum };
 
             foreach (var (name, addr) in args.VisibleVars)
             {
@@ -713,7 +713,7 @@ public partial class MainWindowViewModel : ObservableObject
 
         var vars = e.VisibleVars;
 
-        var newProtocolEntry = new ProtokolEntryViewModel();
+        var newProtocolEntry = new ProtocolEntryViewModel();
         newProtocolEntry.Num = e.LabelNum;
 
         foreach (var (name, addr) in vars)

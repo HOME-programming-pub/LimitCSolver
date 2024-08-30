@@ -5,14 +5,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace LimitCSolver.MainApplication.ViewModel;
 
-public class ProtokolEntryViewModel : ObservableObject
+public class ProtocolEntryViewModel : ObservableObject
 {
-    public ProtokolEntryViewModel()
+    public ProtocolEntryViewModel()
     {
         _varEntrys.CollectionChanged += (sender, args) => Renumerate();
     }
 
-    public ProtokolEntryViewModel(int labelNum, IEnumerable<VarViewModel> vars)
+    public ProtocolEntryViewModel(int labelNum, IEnumerable<VarViewModel> vars)
     {
         _num = labelNum;
         VarEntrys = new ObservableCollection<VarViewModel>(vars);

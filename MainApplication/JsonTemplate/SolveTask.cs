@@ -5,7 +5,7 @@ namespace ViewModel.JsonTemplate;
 
 public partial class SolveTask : ObservableObject
 {
-    public SolveTask(string code, string name, bool needTypes, ProtokolViewModel protokol)
+    public SolveTask(string code, string name, bool needTypes, ProtocolViewModel protokol)
     {
         _code = code;
         _name = name;
@@ -23,7 +23,7 @@ public partial class SolveTask : ObservableObject
     private bool _needTypes;
     
     [ObservableProperty]
-    private ProtokolViewModel _protokol;
+    private ProtocolViewModel _protokol;
     
     [ObservableProperty]
     private decimal _pointForMatch = 0.5m;

@@ -114,7 +114,7 @@
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type viewModels1:ProtokolEntryViewModel}" >
+                                <DataTemplate DataType="{x:Type viewModels1:ProtocolEntryViewModel}" >
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="25" />
@@ -226,7 +226,7 @@
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type viewModels1:ProtokolEntryViewModel}">
+                                <DataTemplate DataType="{x:Type viewModels1:ProtocolEntryViewModel}">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="25" />

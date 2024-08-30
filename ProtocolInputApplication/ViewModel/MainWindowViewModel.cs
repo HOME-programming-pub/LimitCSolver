@@ -12,7 +12,7 @@ namespace LimitCSolver.ProtocolInputApplication.ViewModel;
 public class MainWindowViewModel : ObservableObject
 {
 
-    private SolveTask _currentConfig = new("", "", false, new ProtokolViewModel());
+    private SolveTask _currentConfig = new("", "", false, new ProtocolViewModel());
 
 
     public SolveTask CurrentConfig
