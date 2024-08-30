@@ -151,10 +151,12 @@ public partial class MainWindowViewModel : ObservableObject
 
     private void ExecuteGenerateCode()
     {
-        CreateLimitCVM.ExecuteGenerateCode();
+        string filePath = ".\\output.lct.json";
 
-        string filePath = "..\\..\\..\\..\\_Modul_CreateLimitC\\Model\\output.lct.json";
 
+        CreateLimitCVM.ExecuteGenerateCode(filePath);
+
+   
         if (!File.Exists(filePath))
         {
             MessageBox.Show("Datei wurde nicht gefunden: " + filePath);
@@ -240,7 +242,8 @@ public partial class MainWindowViewModel : ObservableObject
         try
         {
             var dialog = new SaveFileDialog();
-            dialog.FileName = $"Aufgabenstellung_{CurrentConfig.Name.Replace(" ", "_")}";
+            if(CurrentConfig.Name != null)
+                dialog.FileName = $"Aufgabenstellung_{CurrentConfig.Name.Replace(" ", "_")}";
             dialog.DefaultExt = ".json";
             dialog.Filter = "Json Files (.lct.json)|*.lct.json|Alle Dateien (*.*)|*.*";
 
