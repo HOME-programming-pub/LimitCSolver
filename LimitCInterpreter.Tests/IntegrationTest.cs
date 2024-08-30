@@ -1,7 +1,7 @@
-using static System.Formats.Asn1.AsnWriter;
 using Antlr4.Runtime;
+using LimitCSolver.LimitCInterpreter.Parser;
 
-namespace LimitCInterpreter.Tests
+namespace LimitCSolver.LimitCInterpreter.Tests
 {
     public class IntegrationTests
     {
@@ -37,9 +37,8 @@ namespace LimitCInterpreter.Tests
             var mainFunction = functions.ElementAt(0).Value;
             Assert.That(mainFunction.ReturnType, Is.EqualTo(("int")));
 
-            var visitor = new Interpreter.LimitCInterpreter(functionDetector.FunctionDefs, new Interpreter.Scope()); // main-Visitor, bekommt erkannte Funktionsdefinitionen und leeren global Scope
+            var visitor = new LimitCInterpreter(functionDetector.FunctionDefs, new Scope()); // main-Visitor, bekommt erkannte Funktionsdefinitionen und leeren global Scope
             var result = visitor.Visit(LimitCContext); // abarbeitung starten
-
             // Assert.IsNotNull(result);
 
         }
