@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace LimitCProtokollInput.Helper;
+namespace LimitCSolver.ProtocolInputApplication.View;
 
 public class GridHelpers
 {

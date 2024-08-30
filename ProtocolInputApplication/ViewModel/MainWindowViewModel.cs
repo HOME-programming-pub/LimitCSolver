@@ -5,9 +5,9 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using ViewModel.JsonTemplate;
-using ViewModel;
+using LimitCSolver.MainApplication.ViewModel;
 
-namespace LimitCProtokollInput.ViewModels;
+namespace LimitCSolver.ProtocolInputApplication.ViewModel;
 
 public class MainWindowViewModel : ObservableObject
 {
