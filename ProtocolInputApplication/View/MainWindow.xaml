@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LimitCSolver.ProtocolInputApplication.View"
         xmlns:viewModels="clr-namespace:LimitCSolver.ProtocolInputApplication.ViewModel"
-        xmlns:viewModels1="clr-namespace:LimitCSolver.MainApplication.ViewModel;assembly=MainApplication"
+        xmlns:viewModels1="clr-namespace:LimitCSolver.MainApplication.ViewModel;assembly=protsolve"
         xmlns:helper="clr-namespace:LimitCSolver.ProtocolInputApplication.View"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
