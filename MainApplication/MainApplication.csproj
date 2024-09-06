@@ -8,6 +8,12 @@
 	<ImplicitUsings>enable</ImplicitUsings>
 	<IsTrimmable>false</IsTrimmable> 
 	<AssemblyName>protsolve</AssemblyName>
+	<ProductName>LimitCSolver UI</ProductName>
+	<Product>LimitCSolver UI</Product>
+	<Title>LimitCSolver UI</Title>
+	<Description>Practice and solve simple C storage protocols</Description>
+	<Copyright>Hochschule Merseburg</Copyright>
+	<Company>Hochschule Merseburg</Company>
   </PropertyGroup>
 
   <ItemGroup>
