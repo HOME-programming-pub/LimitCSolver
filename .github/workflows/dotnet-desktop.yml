@@ -89,7 +89,13 @@ jobs:
 
 
     # Create the app package by building and packaging the Windows Application Packaging project
-    - name: Create the app package
-      run: msbuild --restore $env:Solution_Name /t:Publish /t:$env:Wap_Project_Directory /p:Configuration=$env:Configuration /p:PublishProfile=.\Properties\PublishProfiles\FolderProfile.pubxml
+    - name: Create and publish the exectucable to folder
+      run: msbuild --restore $env:Solution_Name /t:MainApplication:Publish /p:Configuration=$env:Configuration /p:PublishProfile=.\Properties\PublishProfiles\FolderProfile.pubxml
       env:
         Configuration: ${{ matrix.configuration }}
+    
+    - name: Upload the exectutable
+      uses: actions/upload-artifact@v3
+      with:
+        path: |
+          MainApplication/bin/Release/net6.0-windows/publish/win-x64/protsolve.exe
