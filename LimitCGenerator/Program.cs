@@ -7,6 +7,7 @@ using System.Threading;
 using System.Reflection.Metadata;
 using System.Diagnostics;
 using System.Data;
+using System.IO;
 
 namespace LimitCSolver.LimitCGenerator;
 
@@ -27,7 +28,7 @@ public class CodeGenerator
     private DifficultySettings settings;
 
     // Debug-Parameter //
-    private static bool debug = false;
+    private static bool debug = true;
     private static bool debugAddition = true;
     private static bool debugSubtraction = true;
     private static bool debugMultiplication = true;
@@ -87,7 +88,7 @@ public class CodeGenerator
     }
 
 
-    public void GenerateCode()
+    public string GenerateCode()
     {
         StringBuilder code = new StringBuilder();
 
@@ -193,19 +194,24 @@ public class CodeGenerator
         }
 
         code.Append("\"}");
+        return code.ToString();
+    }
+
+    public bool GenerateCode(string targetPath)
+    {
         try
         {
-            string filePath = "..\\..\\..\\..\\_Modul_CreateLimitC\\Model\\output.lct.json";
-
-            System.IO.File.WriteAllText(filePath, code.ToString());
-            if (debug) { Console.WriteLine("Datei wurde erfolgreich geschrieben."); }
+            var code = GenerateCode();           
+            var fileInfo = new FileInfo(targetPath);
+            File.WriteAllText(targetPath, code);
+            if (debug) { Console.WriteLine($"Datei wurde erfolgreich in {fileInfo.Name} geschrieben."); }
+            return true;
         }
         catch (Exception ex)
         {
             if (debug) { Console.WriteLine("Fehler beim Schreiben der Datei: " + ex.Message); }
         }
-
-        return;
+        return false;
     }
 
     /****************************************************************************************************************

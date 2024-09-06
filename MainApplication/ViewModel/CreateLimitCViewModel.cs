@@ -113,11 +113,11 @@ public partial class CreateLimitCViewModel : ObservableObject
         CmdCloseTaskPopup.Execute(null);
     }
 
-    public void ExecuteGenerateCode()
+    public void ExecuteGenerateCode(string filePath)
     {
         Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
         CodeGenerator generator = new CodeGenerator(_selectedDifficulty);
-        generator.GenerateCode();
+        generator.GenerateCode(filePath);
     }
 
     partial void OnSelectedTaskDifficultyindexChanging(int value)

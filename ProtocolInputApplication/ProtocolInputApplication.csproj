@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>False</UseWindowsForms>
+    <AssemblyName>protinput</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
