@@ -36,7 +36,7 @@
 # For a complete CI/CD sample to get started with GitHub Action workflows for Desktop Applications,
 # refer to https://github.com/microsoft/github-actions-for-desktop-apps
 
-name: .NET Core Desktop
+name: .NET WPF Application
 
 on:
   push:
@@ -67,8 +67,8 @@ jobs:
       with:
         fetch-depth: 0
 
-    # Install the .NET Core workload
-    - name: Install .NET Core
+    # Install .NET
+    - name: Install .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
@@ -88,14 +88,37 @@ jobs:
         Configuration: ${{ matrix.configuration }}
 
 
-    # Create the app package by building and packaging the Windows Application Packaging project
+    # Create and publish the exectucable to folder
     - name: Create and publish the exectucable to folder
       run: msbuild --restore $env:Solution_Name /t:MainApplication:Publish /p:Configuration=$env:Configuration /p:PublishProfile=.\Properties\PublishProfiles\FolderProfile.pubxml
       env:
         Configuration: ${{ matrix.configuration }}
     
-    - name: Upload the exectutable
-      uses: actions/upload-artifact@v3
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
       with:
+        name: protsolve-exe
         path: |
           MainApplication/bin/Release/net6.0-windows/publish/win-x64/protsolve.exe
+          
+  release:
+    
+    runs-on: ubuntu-latest
+    needs: build
+        
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: protsolve-exe
+              
+    - name: Create release
+      uses: marvinpinto/action-automatic-releases@latest
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "latest"
+        prerelease: true
+        title: "Development Build"
+        files: |
+            **/*.exe
+   
