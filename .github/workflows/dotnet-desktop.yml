@@ -99,9 +99,9 @@ jobs:
       with:
         name: protsolve-dist
         path: |
-          MainApplication/bin/Release/net6.0-windows/publish/win-x64/protsolve.exe |
-          ProtocolInputApplication/bin/Release/net6.0-windows/publish/win-x64/protinput.exe |
-          LICENSE.txt |
+          MainApplication/bin/Release/net6.0-windows/publish/win-x64/protsolve.exe
+          ProtocolInputApplication/bin/Release/net6.0-windows/publish/win-x64/protinput.exe
+          LICENSE.txt
           THIRD_PARTY_LICENSES.txt
           
   release:
@@ -123,6 +123,6 @@ jobs:
         prerelease: true
         title: "Development Build"
         files: |
-            **/*.exe |
+            **/*.exe
             **/*.txt
    
