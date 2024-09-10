@@ -1,22 +1,23 @@
-Teil der Bachelorarbeit: "Ein Löser für teilkorrekte Speicherbelegungsprotokolle in Programmieraufgaben"
-Lukas Reinicke 
-HS Mersburg
+LimitCSolver is a support and learning tool for students who learn the very basics of C programming at Hochschule Merseburg. The main purpose of the tool is to enable a better understanding of the scoping rules in C programs.
 
-Erklärung Projekte:
-LimitCProtokollInput 		-> 	Input Tool für Speicherbelegungsprotokolle
-LimimtCSolver 			->	LimitCInterpreter
-ProtokollResolver		-> 	Löser / Lösungsanwendung
-ResolverCommonClasses		->	Klaasenbib für gemeinsam genutzt Klassen (Input + Resolver)
+Written in C# and .NET using Windows Presentation Foundation, the software runs on Windows only.
 
-C# mit .NET6, Frontends WPF (Windows only)
+Source code is organized as a Visual Studio 2022 Solution including the following projects:
 
-Anwendung ist komplett mit Visual Studio 2022 Community Edition erstellt.
+* LimitCInterpreter: an interpreter that can understand a tiny fraction of the C programming language (called LimitC), sufficient to check the very basic scoping rules of the language
+* LimitCInterpreter.Test: the interpreter's test cases (not enough to be honest)
+* MainApplication: the main UI to load simple C programs and create protocols of the variables states at certain check-points (label comments) and compare with the real values that would occur during program execution
+* ProtocolInputApplication: a little helper to create task files that can be loaded by the MainApplication
+* LimitCGenerator: a tool that can generate random LimitC programs to be used as tasks for practicing and improve understanding 
 
-Zum bauen eines neues Parsers (nach Anpassung Grammatik) ist ANTLR4 notwendig!
-Grammatik: \LimitCSolver\LimitC.g4
-Generated Classes: \LimitCSolver\gen\
+The project depends on the following NuGet-packages (see license files too):
+* CommunityToolkit.Mvvm (License: MIT)
+* Newtonsoft.Json (License: MIT)
+* Antlr4.Runtime.Standard (License: BSD 3-Clause)
 
-Verwendete Nuget-Packete:
-CommunityToolkit.Mvvm (MIT)
-Newtonsoft.Json (MIT)
-Antlr4.Runtime.Standard (BSD 3-Clause)
+The code has been written by students of Hochschule Merseburg.
+
+Project contributors:
+* Lukas Reinicke, first implementation in his bachelor thesis
+* Paul Lüttich, coding of the LimitC-Generator in his master thesis
+* Sven Karol, supervision and (some) coding 
