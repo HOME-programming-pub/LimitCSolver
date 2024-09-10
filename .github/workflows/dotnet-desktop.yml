@@ -90,16 +90,19 @@ jobs:
 
     # Create and publish the exectucable to folder
     - name: Create and publish the exectucable to folder
-      run: msbuild --restore $env:Solution_Name /t:MainApplication:Publish /p:Configuration=$env:Configuration /p:PublishProfile=.\Properties\PublishProfiles\FolderProfile.pubxml
+      run: msbuild --restore $env:Solution_Name /t:MainApplication:Publish /t:ProtocolInputApplication:Publish /p:Configuration=$env:Configuration /p:PublishProfile=.\Properties\PublishProfiles\FolderProfile.pubxml
       env:
         Configuration: ${{ matrix.configuration }}
     
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: protsolve-exe
+        name: protsolve-dist
         path: |
           MainApplication/bin/Release/net6.0-windows/publish/win-x64/protsolve.exe
+          ProtocolInputApplication/bin/Release/net6.0-windows/publish/win-x64/protinput.exe
+          LICENSE.txt
+          THIRD_PARTY_LICENSES.txt
           
   release:
     
@@ -110,7 +113,7 @@ jobs:
     - name: Download artifacts
       uses: actions/download-artifact@v4
       with:
-        name: protsolve-exe
+        name: protsolve-dist
               
     - name: Create release
       uses: marvinpinto/action-automatic-releases@latest
@@ -121,4 +124,5 @@ jobs:
         title: "Development Build"
         files: |
             **/*.exe
+            **/*.txt
    
