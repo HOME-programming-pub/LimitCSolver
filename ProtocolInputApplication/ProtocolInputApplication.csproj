@@ -5,7 +5,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <UseWindowsForms>False</UseWindowsForms>
+    <UseWindowsForms>false</UseWindowsForms>
     <AssemblyName>protinput</AssemblyName>
     <!-- Disable containment check: https://learn.microsoft.com/de-de/dotnet/core/compatibility/sdk/5.0/referencing-executable-generates-error -->
 	<ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
