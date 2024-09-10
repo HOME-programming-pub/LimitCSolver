@@ -1,3 +1,5 @@
+![Latest Workflow](https://github.com/HOME-programming-pub/LimitCSolver/actions/workflows/dotnet-desktop.yml/badge.svg)
+
 LimitCSolver is a support and learning tool for students who learn the very basics of C programming at Hochschule Merseburg. The main purpose of the tool is to enable a better understanding of the scoping rules in C programs.
 
 Written in C# and .NET using Windows Presentation Foundation, the software runs on Windows only.
