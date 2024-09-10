@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>False</UseWindowsForms>
+    <AssemblyName>protinput</AssemblyName>
+    <!-- Disable containment check: https://learn.microsoft.com/de-de/dotnet/core/compatibility/sdk/5.0/referencing-executable-generates-error -->
+	<ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\MainApplication\MainApplication.csproj" />
+  </ItemGroup>
+
+</Project>
