@@ -2,6 +2,8 @@
 
 LimitCSolver is a support and learning tool for students who learn the very basics of C programming at [Hochschule Merseburg](https://www.hs-merseburg.de/). The main purpose of the tool is to enable a better understanding of the scoping rules in C programs.
 
+## Project Structure
+
 Written in C# and .NET using Windows Presentation Foundation, the software runs on Windows only.
 
 ### Source code is organized as a Visual Studio 2022 Solution including the following projects:
@@ -21,7 +23,47 @@ Written in C# and .NET using Windows Presentation Foundation, the software runs 
 * protsolve.exe: main UI for the labeled memory protocols (variable states at check points)
 * protinput.exe: UI to create task files from plain LimitCPrograms 
 
-### Project contributors:
+## Example Task
+
+A memory-protocol task typically has the following shape (the example was taken from our very basic C programming course):
+```
+float a;
+
+int main(void)
+{
+    int b = 1, c = 2;
+    /* Label 1 */
+    {
+        char a = 78;
+        c = 3;
+        /* Label 2 */
+        {
+            long b = -42;
+            a = 5;
+            /* Label 3 */
+        }
+        /* Label 4 */
+        {
+            float a = 0;
+            int b = 1, c = 2; 
+        }
+        /* Label 5 */
+    }
+    short d = 8;
+    /* Label 6 */
+}
+```
+The task's main objective is to find out which names are in scope at the `/* Label X */` and which variables (memory locations) are addressed by these names at the label's position. Based on that information and from the computations in the program, students need to determine the actual values of the visible variables at each label and add them to a table (i.e., the _memory protocol_). The table has in each row a label and one column per name of a variable in the program. Considering the program above, the solution looks as follows:
+|Position   |   a   |   b   |   c   |   d   | 
+|-----------|-------|-------|-------|-------|
+|Label 1    |  0.0  |   1   |   2   |   -   |
+|Label 2    |  78   |   1   |   3   |   -   |
+|Label 3    |   5   |  -42  |   3   |   -   |
+|Label 4    |   5   |   1   |   3   |   -   |
+|Label 5    |   5   |   1   |   3   |   -   |
+|Label 6    |  0.0  |   1   |   2   |   8   |
+
+## Project contributors:
 
 The tool has been written by students of Hochschule Merseburg.
 
