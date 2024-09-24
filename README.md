@@ -65,7 +65,15 @@ The task's main objective is to find out which names are in scope at the `/* Lab
 
 Checking a solution for correctness is damn simple: one would just need to add a printf statements add each label: `printf("a = %d, b = %d, c = %d", a, b, c)`. Of course, usage of format specifiers depends on types and also some knowledge about visibility rules is required.
 
-So why an extra tool? Besides checking for correctness, the program computes points and also can check solutions which are only partially correct by continuing computation with _false_ intermediate values. For example, a student might have guessed wrongly, that the value of `a` at `/* Label 1 */` is _1.0_ instead of _0.0_. If the program was only checked for correctness, the whole solution could be considered wrong, i.e., yielding _0_ of _19_ points. Alternatively, if the value of value of `a` at `/* Label 6 */` also was _1.0_ while the remaining values are correct, that could just yield _17_ of _19_ points by comparing the entries of the tables with the correct values. However, this remains unfair, since if `a = 1.0` at `/* Label 1 */` it should have been `a = 1.0` at `/* Label 6 */` too, which is the correct follow-up value. Hence, the soulution yields _18_ of _19_ points.  This is what the tool can compute and prompt to the student while, e.g., practicing.  
+So why an extra tool? 
+
+Besides checking for correctness, the program computes points and also can check solutions which are only partially correct by continuing computation with _false_ intermediate values. For example, a student might have guessed wrongly, that the value of `a` at `/* Label 1 */` is _1.0_ instead of _0.0_. If the program was only checked for correctness, the whole solution could be considered wrong, i.e., yielding _0_ of _19_ points. Alternatively, if the value of value of `a` at `/* Label 6 */` also was _1.0_ while the remaining values are correct, that could just yield _17_ of _19_ points by comparing the entries of the tables with the correct values. However, this remains unfair, since if `a = 1.0` at `/* Label 1 */` it should have been `a = 1.0` at `/* Label 6 */` too, which is the correct follow-up value. Hence, the soulution yields _18_ of _19_ points.  This is what the tool can compute and prompt to the student while, e.g., practicing.  
+
+An additional feature of the tool is that it can generate new tasks randomly. So if you just want to do some additional practice, you can just hit a button and a new task is generated.
+
+## Tool usage
+
+
 
 ## Project contributors:
 
