@@ -72,13 +72,13 @@ Besides checking for correctness, the program computes points and also can check
 An additional feature of the tool is that it can generate new tasks randomly. So if you just want to do some additional practice, you can just hit a button and a new task is generated.
 
 ## Tool usage
-The tool consists of two Windows executables. _protinput.exe_ is a helper that converts a plain C program file into a task file. _protsolve.exe_ is the actual tool for loading, generating and practising memory-protocl tasks.
+The tool consists of two Windows executables. _protinput.exe_ is a helper that converts a plain C program file into a task file. _protsolve.exe_ is the actual tool for loading, generating and practising memory-protocol tasks.
 
 To add a task like the one above to the tool, the program can just be added to the code section and saved (_Aufgabe speichern_, note that the UI currently is German only):
 
 ![screenshot with simple task](assets/images/limitcsolver_simple_task.png)
 
-Next to _Aufgabenname_ one may assign the task a name, e.g., 'simple'. This will save a file named 'Aufgabenstellung_simple.lct.json' using a JSON text format, looking basically as follows:
+Next to _Aufgabenname_ one may assign the task a name, e.g., 'simple'. This will save a file named `Aufgabenstellung_simple.lct.json` using a JSON text format, looking basically as follows:
 
 ```json
 {
@@ -91,6 +91,13 @@ Next to _Aufgabenname_ one may assign the task a name, e.g., 'simple'. This will
 }
 
 ```
+The file contents read as follows:
+* _Name_: this is the name of the task, as shown in the UI
+* _Code_: this is the actual program code including label comments. Note that JSON does not support multiline strings, line breaks need to be escaped (``\r\n`` is the Windows line break).
+* _NeedTypes_ (optional): this indicates if types should be checked. Default is _false_.
+* _PointForMatch_ (optional): this determines, how many points a given per correct entry. Default is _0.5_.
+* _Protokol_ (optional): this is the protocol table, which is not required in the task file.
+
 
 ## Project contributors:
 
