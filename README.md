@@ -26,7 +26,7 @@ Written in C# and .NET using Windows Presentation Foundation, the software runs 
 ## Example Task
 
 A memory-protocol task typically has the following shape (the example was taken from our very basic C programming course):
-```
+```c
 float a;
 
 int main(void)
