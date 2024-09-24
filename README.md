@@ -72,8 +72,25 @@ Besides checking for correctness, the program computes points and also can check
 An additional feature of the tool is that it can generate new tasks randomly. So if you just want to do some additional practice, you can just hit a button and a new task is generated.
 
 ## Tool usage
+The tool consists of two Windows executables. _protinput.exe_ is a helper that converts a plain C program file into a task file. _protsolve.exe_ is the actual tool for loading, generating and practising memory-protocl tasks.
 
+To add a task like the one above to the tool, the program can just be added to the code section and saved (_Aufgabe speichern_, note that the UI currently is German only):
 
+![screenshot with simple task](assets/images/limitcsolver_simple_task.png)
+
+Next to _Aufgabenname_ one may assign the task a name, e.g., 'simple'. This will save a file named 'Aufgabenstellung_simple.lct.json' using a JSON text format, looking basically as follows:
+
+```json
+{
+    "Name": "simple",
+    "Code": "float a;\r\n\r\nint main(void)\r\n{\r\n    int b = 1, c = 2;\r\n    /* Label 1 */\r\n    {\r\n        char a = 78;\r\n        c = 3;\r\n        /* Label 2 */\r\n        {\r\n            long b = -42;\r\n            a = 5;\r\n            /* Label 3 */\r\n        }\r\n        /* Label 4 */\r\n        {\r\n            float a = 0;\r\n            int b = 1, c = 2; \r\n        }\r\n        /* Label 5 */\r\n    }\r\n    short d = 8;\r\n    /* Label 6 */\r\n}",
+    "NeedTypes": false,
+    "PointForMatch": 0.5,
+    "Protokol": { ...
+    }
+}
+
+```
 
 ## Project contributors:
 
