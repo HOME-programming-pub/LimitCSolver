@@ -98,6 +98,15 @@ The file contents read as follows:
 * _PointForMatch_ (optional): this determines, how many points a given per correct entry. Default is _0.5_.
 * _Protokol_ (optional): this is the protocol table, which is not required in the task file.
 
+After storing and reloading the task file, it becomes possible to use the _Sync Code_ button which creates an initonal, empty protocol where values can be typed in. For the above example, this looks as follows:
+
+![screenshot with simple task](assets/images/limitcsolver_simple_task_synced.png)
+
+After typing the values in and completing the protocol, it can be checked for correctness and points can be computed by clicking on _Prüfen_. A correct value gets a dark-green background, an incorrect value gets red background and a correct follow-up solution gets a light-green background:
+
+![screenshot with evaluated task](assets/images/limitcsolver_simple_task_evaluated.png)
+
+The entered protocols can optionally be stored or loaded via _Protokol laden_ and _Protocol speichern_. _Lösung ein-/ausblenden_ computes the correct solution.
 
 ## Project contributors:
 
