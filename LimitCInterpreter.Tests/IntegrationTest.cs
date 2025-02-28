@@ -1,5 +1,6 @@
 using Antlr4.Runtime;
 using LimitCSolver.LimitCInterpreter.Parser;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace LimitCSolver.LimitCInterpreter.Tests
 {
@@ -11,19 +12,35 @@ namespace LimitCSolver.LimitCInterpreter.Tests
         }
 
         [Test]
-        public void Test1()
+        public void ParseOKTest()
+        {
+            var file = ".\\TestData\\test1.c.test";
+            var txt = File.ReadAllText(file);
+            ParseTest(txt, 0);
+        }
+
+        [Test]
+        public void ParseFailTest()
+        {
+            var file = ".\\TestData\\test2.c.test";
+            var txt = File.ReadAllText(file);
+            ParseTest(txt, 2);
+        }
+
+        private void ParseTest(string program, int expectedErrorCnt)
         {
 
-            var file = ".\\TestData\\test1.c.test";
+            var inputStream = new AntlrInputStream(program);
+            var lexer = new LimitCLexer(inputStream);
+            var tkStream = new CommonTokenStream(lexer);
+            var parser = LimitCParser.Instance(tkStream);
 
-            var txt = File.ReadAllText(file);
+            var LimitCContext = parser.prog(); // erstellen des Parsebaumes
 
-            AntlrInputStream inputStream = new AntlrInputStream(txt);
-            LimitCLexer LimitCLexer = new LimitCLexer(inputStream);
-            CommonTokenStream commonTokenStream = new CommonTokenStream(LimitCLexer);
-            LimitCParser LimitCParser = new LimitCParser(commonTokenStream);
+            Assert.That(parser.Errors.Count, Is.EqualTo(expectedErrorCnt));
 
-            var LimitCContext = LimitCParser.prog(); // erstellen des Parsebaumes
+            if(expectedErrorCnt > 0)
+                return;
 
             var functionDetector = new LimitCFunctionTreeBuilder(); // Funktions-Detektor
             functionDetector.Visit(LimitCContext); // erkennen von erkannten Funktionen
@@ -40,7 +57,6 @@ namespace LimitCSolver.LimitCInterpreter.Tests
             var visitor = new LimitCInterpreter(functionDetector.FunctionDefs, new Scope()); // main-Visitor, bekommt erkannte Funktionsdefinitionen und leeren global Scope
             var result = visitor.Visit(LimitCContext); // abarbeitung starten
             // Assert.IsNotNull(result);
-
         }
     }
 }

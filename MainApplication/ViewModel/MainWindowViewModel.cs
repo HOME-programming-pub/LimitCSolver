@@ -277,22 +277,21 @@ public partial class MainWindowViewModel : ObservableObject
         SyncProtocolCommand.NotifyCanExecuteChanged();
     }
 
-    private static LimitCParser.ProgContext parse(string code)
+    private static LimitCParser.ProgContext? parse(string code)
     {
-        AntlrInputStream inputStream = new AntlrInputStream(code);
-        LimitCLexer limitCLexer = new LimitCLexer(inputStream);
-        CommonTokenStream commonTokenStream = new CommonTokenStream(limitCLexer);
-        LimitCParser limitCParser = new LimitCParser(commonTokenStream);
+        var inputStream = new AntlrInputStream(code);
+        var lexer = new LimitCLexer(inputStream);
+        var tkStream = new CommonTokenStream(lexer);
+        var parser = LimitCParser.Instance(tkStream);
 
-        //limitCParser.ErrorHandler = new DefaultErrorStrategy(){}
-        limitCParser.RemoveErrorListeners();
-        limitCParser.AddErrorListener(new DiagnosticErrorListener());
+        parser.AddErrorListener(new DiagnosticErrorListener());
 
-        //limitCParser.AddErrorListener();
+        var limitCContext = parser.prog();
 
-        var limitCContext = limitCParser.prog();
-
-        return limitCContext;
+       if (parser.Errors.Count != 0)
+           return null; // This is dirty. Errors should be handled and displayed to the user.
+        else
+            return limitCContext;
     }
 
     private bool CanCheckProtocol() => GivenProtokol != null && !string.IsNullOrWhiteSpace(CurrentConfig.Code);
@@ -309,6 +308,9 @@ public partial class MainWindowViewModel : ObservableObject
         CorrectedVars.Clear();
 
         var program = parse(CurrentConfig.Code);
+        if(program == null)
+           return; // an error occured during tree build, we cannot continue safely
+     
         var interpreter = new LimitCInterpreter.LimitCInterpreter();
 
         interpreter.LabelCheckPointReached += VisitorOnLabelCheckPointReachedCheckProtokol;
@@ -328,6 +330,9 @@ public partial class MainWindowViewModel : ObservableObject
         }
         CalcedSolution = new ProtocolViewModel();
         var program = parse(CurrentConfig.Code);
+        if (program == null)
+            return; // an error occured during tree build, we cannot continue safely
+
         var interpreter = new LimitCInterpreter.LimitCInterpreter();
 
         interpreter.LabelCheckPointReached += VisitorOnLabelCheckPointReachedCreateSolution;
@@ -418,6 +423,7 @@ public partial class MainWindowViewModel : ObservableObject
         var interpreter = new LimitCInterpreter.LimitCInterpreter();
         var program = parse(CurrentConfig.Code);
 
+
         interpreter.LabelCheckPointReached += (sender, args) =>
         {
             var npe = new ProtocolEntryViewModel() { Num = args.LabelNum };
@@ -431,6 +437,11 @@ public partial class MainWindowViewModel : ObservableObject
             }
             newProtocol.Entrys.Add(npe);
         };
+
+
+
+        if (program == null)
+            return newProtocol; // an error occured during tree build, we cannot continue safely
 
         interpreter.evaluate(program);
 

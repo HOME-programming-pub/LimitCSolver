@@ -1,0 +1,24 @@
+float a;
+int main(void)
+{
+int b = 1, c = 2;
+/* Label 1 */
+{
+char a = 78;
+c = 3;
+/* Label 2 */
+{
+long b = -42;
+a = 5;
+/* Label 3 */
+}
+/* Label 4 */
+{
+	fl oat a = 0;
+int b = 1, c = 2;
+}
+/* Label 5 */
+}
+short d = 8;
+/* Label 6 */
+}
