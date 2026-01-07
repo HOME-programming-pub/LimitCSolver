@@ -114,4 +114,7 @@ The tool has been written by students of Hochschule Merseburg.
 
 * Lukas Reinicke, first implementation in his bachelor thesis
 * Paul Lüttich, coding of the LimitC-Generator in his master thesis
-* Sven Karol, supervision and (some) coding 
+* Sven Karol, supervision and (some) coding
+
+## References
+Lukas Reinicke, Ein Löser für teilkorrekte Speicherbelegungsprotokolle in Programmieraufgaben, Bachelorarbeit, Hochschule Merseburg, 2023. DOI: https://dx.doi.org/10.25673/111626
